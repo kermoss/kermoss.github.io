@@ -463,6 +463,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_prerequisites">2.1. Prerequisites</a></li>
 <li><a href="#_getting_kermoss">2.2. Getting Kermoss</a></li>
+<li><a href="#_first_steps_to_master_kermoss">2.3. First steps to master Kermoss</a></li>
+<li><a href="#_how_to_run_pizza_shop_microservices">2.4. How to run pizza shop microservices .</a></li>
+<li><a href="#_how_to_run_pizza_shop_as_single_monolith_application">2.5. How to run pizza shop as single monolith application .</a></li>
 </ul>
 </li>
 </ul>
@@ -674,6 +677,137 @@ spring.jpa.properties.hibernate.hbm2ddl.auto: create <i class="conum" data-value
 </table>
 </div>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_first_steps_to_master_kermoss"><a class="anchor" href="#_first_steps_to_master_kermoss"></a>2.3. First steps to master Kermoss</h3>
+<div class="paragraph">
+<p>To concretely master the different concepts of kermoss we will refer to the pizzashop example, for more details on the source code of the pizzashop project see this <a href="https://github.com/kermoss/kermoss/tree/master/saga-worker"> link</a></p>
+</div>
+<div class="paragraph">
+<p>The pizzashop project consists of three microservices:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>pizzashop: contains the logic for ordering pizza, cooking, and payment</p>
+</li>
+<li>
+<p>pizzaship: contains the delivery logic</p>
+</li>
+<li>
+<p>market: provides the necessary ingredients for a pizza</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_to_run_pizza_shop_microservices"><a class="anchor" href="#_how_to_run_pizza_shop_microservices"></a>2.4. How to run pizza shop microservices .</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>git clone https://github.com/kermoss/kermoss.git
+cd kermoss
+mvn clean install <i class="conum" data-value="1"></i><b>(1)</b>
+cd saga-worker/target
+java -jar saga-worker-${version}.jar --spring.profiles.active=dev,shop <i class="conum" data-value="2"></i><b>(2)</b>
+java -jar saga-worker-${version}.jar --spring.profiles.active=dev,ship <i class="conum" data-value="3"></i><b>(3)</b>
+java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This will build the whole project and include saga-worker which the maven module containing the source code for the pizza shop microservices</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>launch the pizzshop microservice in dev mode</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>launch the pizzaship microservice in dev mode</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>launche the microservice market in dev mode</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><em>Each microservice has its own configuration file you can find and modify it in the saga-worker / resources folder example application-market.yml is the configuration file for market microservice</em></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_to_run_pizza_shop_as_single_monolith_application"><a class="anchor" href="#_how_to_run_pizza_shop_as_single_monolith_application"></a>2.5. How to run pizza shop as single monolith application .</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>java -jar saga-worker-${version}.jar --spring.profiles.active=dev,single <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>launch the pizzshop application in dev mode</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><em>application-single.yml est le fichier de configuration yaml pour pizza shop application</em></p>
+</div>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Kermoss by default uses communication in asynchronous mode even if the pizzaship service is not available it can continue while waiting for it to be up and running, but this does not prevent kermoss from also supporting synchronous communication in blocking mode, this will be illustrated in the scenario when pizzashop microservice requests the service market in blocking mode, if there is not enough ingredient or the service does not respond, the pizzashope service stops the global transaction</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The pizza shop microservice is the owner and initiator of the global transaction, so by default kermoss assigns it the role of the orchestrator of the entire distributed transaction cycle, all communication in the BFM (Business Flow Model) internally in pizza shop are driven by events, on the other hand communication with other microservices (market and pizza ship) are driven by commands</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>A BFM (Business Flow Model) is just a set of components in the form of a java class called <strong> workers </strong> (global and local transaction)</p>
+</div>
+<div class="ulist">
+<div class="title">A BFM is made up of :</div>
+<ul>
+<li>
+<p><strong> worker </strong> class that extends GlobalTransactionWorker allowing to start or close a global transaction by listening on events..</p>
+</li>
+<li>
+<p><strong> worker </strong> class that extends LocalTransactionWorker allowing to start or close or rollback (compensate) a local transaction by listening on events.</p>
+</li>
+<li>
+<p>Each <strong> worker </strong> communicate internally by events and can send commands to remote BFMs all this happens through <strong> TransactionStepDefinition </strong> these are in a way the equivalent of RouteBuilder in the camel project.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
