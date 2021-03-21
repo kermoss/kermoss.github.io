@@ -740,6 +740,70 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <b clas
 </div>
 </div>
 <div class="sect1">
+<h2 id="_kermoss_project_organization">Kermoss : project organization</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>it is better to have the following organization for your project, however you are free to choose a suitable structure for your project, the objective of this part is to show you the different components that you would need to develop your project with kermoss.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>📒 pizza-shop <b class="conum">(1)</b>
+  📄 pom.xml
+  📂 src/main/java
+    📂 org.pizzasho <b class="conum">(2)</b>
+      📂 api <b class="conum">(3)</b>
+      📂 cmd <b class="conum">(4)</b>
+      📂 decoder <b class="conum">(5)</b>
+      📂 domain <b class="conum">(6)</b>
+      📂 event <b class="conum">(7)</b>
+      📂 exception <b class="conum">(8)</b>
+      📂 service <b class="conum">(9)</b>
+      📂 worker <b class="conum">(10)</b>
+        📄 OrderPizzaStateWorker.java <b class="conum">(11)</b>
+  📂 src/main/resources
+    📄 application.yml <b class="conum">(12)</b></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>your project root</p>
+</li>
+<li>
+<p>your root package: the domain name</p>
+</li>
+<li>
+<p>you can create your rest api here</p>
+</li>
+<li>
+<p>package containing the commands to send to remote BFMs</p>
+</li>
+<li>
+<p>package contains decoder services; when a command lands in a remote microservice, the decoder service creates an event based on the commands subject (a subject is only a key that allows the mapping with the distination of the command), for this purpose a given worker (global or local transaction) receives this command by listening on this event.</p>
+</li>
+<li>
+<p>your domain business logic (model + repositories + services)</p>
+</li>
+<li>
+<p>package containing the events for internal communication between the different workers (Global and Local transaction)</p>
+</li>
+<li>
+<p>package containing exceptions</p>
+</li>
+<li>
+<p>package containing the services of the application layer</p>
+</li>
+<li>
+<p>package containing the BFM as a component, we recommend that worker adhere to the following convention: &lt;serviceName&gt; Worker.java</p>
+</li>
+<li>
+<p>contains the configuration of kermoss as well as your application</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_create_your_first_globaltransaction_worker">Create your first globalTransaction worker</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -857,7 +921,58 @@ ApplicationEventPublisher applicationEventPublisher;
 <div class="sect1">
 <h2 id="_link_a_global_transaction_context">Link a global transaction context</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Supposing that in some situation you want to launch an event from your business logic to call a worker (ex: play, commit, or rollback a localTransaction), in this case you need a way to attach the context of a global transaction, by persisting its id in your business model at this level you can communicate with your BFM, outside the context of the global transaction</p>
+</div>
+<div class="paragraph">
+<p>Kermoss provides this feature by offering the attach method in the pipeline <strong> GlobalTransactionStepDefinition </strong> or <strong> LocalTransactionStepDefinition </strong> in this case you can bind a global transaction context either from GlobalTransaction worker, or LocalTransaction Worker.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">       return GlobalTransactionStepDefinition.builder()
+                ...
+                .attach(gtx -&gt;orderSevice.saveGlobalTransactionId(gtx)) <b class="conum">(1)</b>
+                .build();
+    }</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_call_your_bfm_workers_from_outside">Call your BFM workers from outside</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can call your BFM at all levels from your business logic by injecting the BusinessFlow component of the kermoss framework into your services then call the <strong> access </strong> method</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Service
+public class BakingService {
 
+    @Autowired
+    BusinessFlow businessFlow; <b class="conum">(1)</b>
+
+    private static final Logger log = LoggerFactory.getLogger(BakingService.class);
+    @Transactional <b class="conum">(2)</b>
+    public void bake(String gtx, String cartid){
+        businessFlow.access(gtx, new BakingPizzaReadyEvent(cartid));	<b class="conum">(3)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>inject a kermoss <strong> BusinessFlow </strong> service</p>
+</li>
+<li>
+<p>wrap your business logic with the classic spring annoation <strong> @ Transactional </strong>, to ensure that your business logic is transactional including BFM</p>
+</li>
+<li>
+<p>call the access method by injecting it with a global transaction id already persisted in your business model, then the second parameter used as event to commit the local transaction <strong> BakerPizzaServiceWorker </strong> in the pizzashop microservice</p>
+</li>
+</ol>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -878,7 +993,7 @@ ApplicationEventPublisher applicationEventPublisher;
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-20 23:49:38 +0100
+Last updated 2021-03-21 23:22:44 +0100
 </div>
 </div>
 </body>
