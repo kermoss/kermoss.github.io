@@ -464,9 +464,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_prerequisites">2.1. Prerequisites</a></li>
 <li><a href="#_getting_kermoss">2.2. Getting Kermoss</a></li>
 <li><a href="#_first_steps_to_master_kermoss">2.3. First steps to master Kermoss</a></li>
-<li><a href="#_how_to_run_pizza_shop_microservices">2.4. How to run pizza shop microservices .</a></li>
-<li><a href="#_how_to_run_pizza_shop_as_single_monolith_application">2.5. How to run pizza shop as single monolith application .</a></li>
+<li><a href="#_how_to_run_pizza_shop_microservices">2.4. How to run pizza shop microservices</a></li>
+<li><a href="#_how_to_run_pizza_shop_as_single_monolith_application">2.5. How to run pizza shop as single monolith application</a></li>
 <li><a href="#_bfm_pizzashop_together">2.6. BFM &amp; pizzashop together 🙏</a></li>
+<li><a href="#_create_your_first_globaltransaction_worker">2.7. Create your first globalTransaction worker</a></li>
+<li><a href="#_begin_a_new_global_transaction">2.8. Begin a new Global transaction</a></li>
+<li><a href="#_link_a_global_transaction_context">2.9. Link a global transaction context</a></li>
+<li><a href="#_send_a_command_to_a_remote_bfm">2.10. Send a command To a remote BFM</a></li>
+<li><a href="#_enlist_a_local_transaction_worker">2.11. Enlist a Local Transaction Worker</a></li>
 </ul>
 </li>
 </ul>
@@ -630,7 +635,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+<pre class="pygments highlight"><code data-lang="xml">&lt;dependency&gt;
     &lt;groupId&gt;io.kermoss&lt;/groupId&gt;
     &lt;artifactId&gt;reactive-business-flow&lt;/artifactId&gt;
     &lt;version&gt;${io.kermoss.version}&lt;/version&gt;
@@ -639,14 +644,84 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_connect_kermoss_to_your_database"><a class="anchor" href="#_connect_kermoss_to_your_database"></a>2.2.1. connect kermoss to your database</h4>
 <div class="paragraph">
-<p>To connect kermoss to your database, put this configuration in your application.yml file, the database we took as an example is postgresql (oracle or mysql are also supported)</p>
+<p>Kermoss uses <strong> Liquibase </strong> (an open source database change management tool) to manage the versioning of its database schema, if you already have liquibase in your project, you just have to add only this line to your db.changelog-master.xml file</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="xml">&lt;include file="db/changelog/db-kermoss-master.xml" relativeToChangelogFile="false"/&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If your project does not include the <strong> liquibase </strong> tool, in this case add the following configuration in your pom.xml in the section <span class="menuseq"><b class="menu">build</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">plugins</b></span></p>
 </div>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-yml" data-lang="yml">spring.datasource:
+<pre class="pygments highlight"><code data-lang="xml">&lt;plugin&gt;
+  &lt;groupId&gt;org.liquibase&lt;/groupId&gt;
+   &lt;artifactId&gt;liquibase-maven-plugin&lt;/artifactId&gt;
+   &lt;configuration&gt;
+	&lt;propertyFile&gt;src/main/resources/liquibase.properties&lt;/propertyFile&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+	&lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>create the liquibase.properties file in the <span class="menuseq"><b class="menu">src</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="submenu">main</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">resources</b></span> location with the following elements:</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="properties">url=jdbc:postgresql://localhost:5432/pizzashop <i class="conum" data-value="1"></i><b>(1)</b>
+username=postgres <i class="conum" data-value="2"></i><b>(2)</b>
+password=mysecretpassword <i class="conum" data-value="3"></i><b>(3)</b>
+driver=org.postgresql.Driver <i class="conum" data-value="4"></i><b>(4)</b>
+changeLogFile=db/changelog/db.changelog-master.xml <i class="conum" data-value="5"></i><b>(5)</b></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>for (1)-(2)-(3)-(4) change them with those of your own database .</p>
+</div>
+<div class="paragraph">
+<p>for (5) create db.changelog-master.xml file in the <span class="menuseq"><b class="menu">src</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="submenu">main</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="submenu">resources</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="submenu">db</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">changelog</b></span> folder in your project with the following content:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+&lt;databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"&gt;
+    &lt;include file="db/changelog/db-kermoss-master.xml" relativeToChangelogFile="false"/&gt;
+&lt;/databaseChangeLog&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>it&#8217;s almost finished, run the maven command to import the kermoss schema into your database:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="shell">mvn process-resources liquibase:update</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Normally Kermoss should integrate into your project with your existing dataSource and transactionManager configuration with no worries.</p>
+</div>
+<div class="paragraph">
+<p>If you have not yet configured your dataSource , put this configuration in your application.yml file, the database we took as an example is postgresql (oracle or mysql are also supported)</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="yaml">spring.datasource:
   url: jdbc:postgresql://localhost:5432/pizzashop
   username: postgres
   password: mysecretpassword
@@ -658,7 +733,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 # Hibernate settings
 spring.jpa.show-sql: true <i class="conum" data-value="2"></i><b>(2)</b>
 spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-spring.jpa.properties.hibernate.hbm2ddl.auto: create <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+spring.jpa.properties.hibernate.hbm2ddl.auto: validate <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -673,9 +748,10 @@ spring.jpa.properties.hibernate.hbm2ddl.auto: create <i class="conum" data-value
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The database schema will be dropped and created afterward, we recommend setting this value to <strong> validate </strong> for the production environment</td>
+<td>We recommend setting this value to <strong> validate </strong> for the production environment</td>
 </tr>
 </table>
+</div>
 </div>
 </div>
 </div>
@@ -683,7 +759,7 @@ spring.jpa.properties.hibernate.hbm2ddl.auto: create <i class="conum" data-value
 <div class="sect2">
 <h3 id="_first_steps_to_master_kermoss"><a class="anchor" href="#_first_steps_to_master_kermoss"></a>2.3. First steps to master Kermoss</h3>
 <div class="paragraph">
-<p>To concretely master the different concepts of kermoss we will refer to the pizzashop example, for more details on the source code of the pizzashop project see this <a href="https://github.com/kermoss/kermoss/tree/master/saga-worker"> link</a></p>
+<p>To concretely master the different concepts of kermoss we will refer to the pizzashop example, for more details on the source code of the pizzashop project see <a href="https://github.com/kermoss/kermoss/tree/master/saga-worker">here</a></p>
 </div>
 <div class="paragraph">
 <p>The pizzashop project consists of three microservices:</p>
@@ -703,12 +779,12 @@ spring.jpa.properties.hibernate.hbm2ddl.auto: create <i class="conum" data-value
 </div>
 </div>
 <div class="sect2">
-<h3 id="_how_to_run_pizza_shop_microservices"><a class="anchor" href="#_how_to_run_pizza_shop_microservices"></a>2.4. How to run pizza shop microservices .</h3>
+<h3 id="_how_to_run_pizza_shop_microservices"><a class="anchor" href="#_how_to_run_pizza_shop_microservices"></a>2.4. How to run pizza shop microservices</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>git clone https://github.com/kermoss/kermoss.git
+<pre class="pygments highlight"><code data-lang="shell">git clone https://github.com/kermoss/kermoss.git
 cd kermoss
 mvn clean install <i class="conum" data-value="1"></i><b>(1)</b>
 cd saga-worker/target
@@ -742,14 +818,17 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <i clas
 </div>
 </div>
 </div>
+<div class="paragraph">
+<p>If all goes well without error, this entry point <strong><a href="http://localhost:8081/pizza/test/order" class="bare">http://localhost:8081/pizza/test/order</a></strong> allows you to run the pizza order scenario.</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_how_to_run_pizza_shop_as_single_monolith_application"><a class="anchor" href="#_how_to_run_pizza_shop_as_single_monolith_application"></a>2.5. How to run pizza shop as single monolith application .</h3>
+<h3 id="_how_to_run_pizza_shop_as_single_monolith_application"><a class="anchor" href="#_how_to_run_pizza_shop_as_single_monolith_application"></a>2.5. How to run pizza shop as single monolith application</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>java -jar saga-worker-${version}.jar --spring.profiles.active=dev,single <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="pygments highlight"><code data-lang="shell">java -jar saga-worker-${version}.jar --spring.profiles.active=dev,single <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -814,12 +893,151 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <i clas
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_create_your_first_globaltransaction_worker"><a class="anchor" href="#_create_your_first_globaltransaction_worker"></a>2.7. Create your first globalTransaction worker</h3>
+<div class="paragraph">
+<p>You just have to create a class OrderPizzaStateWorker.java (see the example of pizzashop) which extends GlobalTransactionWorker and annotate it with spring @Component annotation</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java">@Component
+public class OrderPizzaStateWorker extends GlobalTransactionWorker&lt;OrderPizzaReceivedEvent, OrderPizzaReadyEvent&gt; {
+
+    public OrderPizzaStateWorker() {
+        super(new WorkerMeta("OrderPizzaService")); <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    @Override
+    @BusinessGlobalTransactional <i class="conum" data-value="2"></i><b>(2)</b>
+    public GlobalTransactionStepDefinition onStart(OrderPizzaReceivedEvent orderPizzaReceivedEvent)  { <i class="conum" data-value="3"></i><b>(3)</b>
+        return GlobalTransactionStepDefinition.builder() <i class="conum" data-value="4"></i><b>(4)</b>
+                .in(orderPizzaReceivedEvent)<i class="conum" data-value="5"></i><b>(5)</b>
+                .meta(this.meta)<i class="conum" data-value="6"></i><b>(6)</b>
+                .process(Optional.empty())<i class="conum" data-value="7"></i><b>(7)</b>
+                .blow(Stream.of(new OrderPizzaReadyEvent(orderPizzaReceivedEvent.getCartId())))<i class="conum" data-value="8"></i><b>(8)</b>
+                .build();
+    }
+
+    @Override
+    @CommitBusinessGlobalTransactional <i class="conum" data-value="9"></i><b>(9)</b>
+    public GlobalTransactionStepDefinition onComplete(OrderPizzaReadyEvent orderPizzaReadyEvent ) { <i class="conum" data-value="10"></i><b>(10)</b>
+        return GlobalTransactionStepDefinition.builder()
+                .in(orderPizzaReadyEvent)
+                .meta(this.meta)
+                .process(Optional.empty())
+                .build();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Worker Meta data, contains the unique name of the global Transaction, it allows to identify it, and to attach the different local transaction workers that must be subordinated by this transaction</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Transaction Demarcation: start a new global transaction by listening to an event</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>listen on an event of type OrderPizzaReceivedEvent</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Create a Global Transaction StepDefinition it is the equivalent of a route builder it allows to execute a command chain</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>allow the Global Transaction StepDefinition to consume the event</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>pass the meta data reference to the Global Transaction StepDefinition</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>you can put a side effect here</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>trigger an event stream</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>Transaction Demarcation: Commit and close Global Transaction by listening to an event</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td>listen on an event of type orderPizzaReadyEvent</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_begin_a_new_global_transaction"><a class="anchor" href="#_begin_a_new_global_transaction"></a>2.8. Begin a new Global transaction</h3>
+<div class="paragraph">
+<p>To be able to start a new global transaction, start an event with:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="java">@Autowired <i class="conum" data-value="1"></i><b>(1)</b>
+ApplicationEventPublisher applicationEventPublisher;
+
+@Transactional <i class="conum" data-value="2"></i><b>(2)</b>
+    public void prepareOrder(Cart cart){
+        orders.put(cart.getId(), cart);
+        applicationEventPublisher.publishEvent(new OrderPizzaReceivedEvent(cart.getId()));<i class="conum" data-value="3"></i><b>(3)</b>
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>inject a spring ApplicationEventPublisher to publish en event</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>decorate your method with the classic <strong> @ Transactional </strong> annotation from spring</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>publish your event to start the global transaction</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_link_a_global_transaction_context"><a class="anchor" href="#_link_a_global_transaction_context"></a>2.9. Link a global transaction context</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_send_a_command_to_a_remote_bfm"><a class="anchor" href="#_send_a_command_to_a_remote_bfm"></a>2.10. Send a command To a remote BFM</h3>
+<div class="sect3">
+<h4 id="_configure_your_layer_transport"><a class="anchor" href="#_configure_your_layer_transport"></a>2.10.1. Configure your layer transport</h4>
+
+</div>
+</div>
+<div class="sect2">
+<h3 id="_enlist_a_local_transaction_worker"><a class="anchor" href="#_enlist_a_local_transaction_worker"></a>2.11. Enlist a Local Transaction Worker</h3>
+
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-18 19:55:49 +0100
+Last updated 2021-03-20 23:53:46 +0100
 </div>
 </div>
 </body>
