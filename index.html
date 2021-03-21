@@ -635,11 +635,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="xml">&lt;dependency&gt;
-    &lt;groupId&gt;io.kermoss&lt;/groupId&gt;
-    &lt;artifactId&gt;reactive-business-flow&lt;/artifactId&gt;
-    &lt;version&gt;${io.kermoss.version}&lt;/version&gt;
-&lt;/dependency&gt;</code></pre>
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>io.kermoss<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>reactive-business-flow<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>${io.kermoss.version}<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
 </div>
@@ -651,7 +651,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="xml">&lt;include file="db/changelog/db-kermoss-master.xml" relativeToChangelogFile="false"/&gt;</code></pre>
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;include</span> <span class="na">file=</span><span class="s">"db/changelog/db-kermoss-master.xml"</span> <span class="na">relativeToChangelogFile=</span><span class="s">"false"</span><span class="nt">/&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -661,13 +661,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="xml">&lt;plugin&gt;
-  &lt;groupId&gt;org.liquibase&lt;/groupId&gt;
-   &lt;artifactId&gt;liquibase-maven-plugin&lt;/artifactId&gt;
-   &lt;configuration&gt;
-	&lt;propertyFile&gt;src/main/resources/liquibase.properties&lt;/propertyFile&gt; <i class="conum" data-value="1"></i><b>(1)</b>
-	&lt;/configuration&gt;
-&lt;/plugin&gt;</code></pre>
+<pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.liquibase<span class="nt">&lt;/groupId&gt;</span>
+   <span class="nt">&lt;artifactId&gt;</span>liquibase-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+   <span class="nt">&lt;configuration&gt;</span>
+	<span class="nt">&lt;propertyFile&gt;</span>src/main/resources/liquibase.properties<span class="nt">&lt;/propertyFile&gt;</span> <i class="conum" data-value="1"></i><b>(1)</b>
+	<span class="nt">&lt;/configuration&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -680,11 +680,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="properties">url=jdbc:postgresql://localhost:5432/pizzashop <i class="conum" data-value="1"></i><b>(1)</b>
-username=postgres <i class="conum" data-value="2"></i><b>(2)</b>
-password=mysecretpassword <i class="conum" data-value="3"></i><b>(3)</b>
-driver=org.postgresql.Driver <i class="conum" data-value="4"></i><b>(4)</b>
-changeLogFile=db/changelog/db.changelog-master.xml <i class="conum" data-value="5"></i><b>(5)</b></code></pre>
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">url</span><span class="p">=</span><span class="s">jdbc:postgresql://localhost:5432/pizzashop </span><i class="conum" data-value="1"></i><b>(1)</b>
+<span class="py">username</span><span class="p">=</span><span class="s">postgres </span><i class="conum" data-value="2"></i><b>(2)</b>
+<span class="py">password</span><span class="p">=</span><span class="s">mysecretpassword </span><i class="conum" data-value="3"></i><b>(3)</b>
+<span class="py">driver</span><span class="p">=</span><span class="s">org.postgresql.Driver </span><i class="conum" data-value="4"></i><b>(4)</b>
+<span class="py">changeLogFile</span><span class="p">=</span><span class="s">db/changelog/db.changelog-master.xml </span><i class="conum" data-value="5"></i><b>(5)</b></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -695,10 +695,10 @@ changeLogFile=db/changelog/db.changelog-master.xml <i class="conum" data-value="
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="xml">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
-&lt;databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"&gt;
-    &lt;include file="db/changelog/db-kermoss-master.xml" relativeToChangelogFile="false"/&gt;
-&lt;/databaseChangeLog&gt;</code></pre>
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;</span>
+<span class="nt">&lt;databaseChangeLog</span> <span class="na">xmlns=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog"</span> <span class="na">xmlns:ext=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog-ext"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;include</span> <span class="na">file=</span><span class="s">"db/changelog/db-kermoss-master.xml"</span> <span class="na">relativeToChangelogFile=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/databaseChangeLog&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -706,7 +706,7 @@ changeLogFile=db/changelog/db.changelog-master.xml <i class="conum" data-value="
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="shell">mvn process-resources liquibase:update</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">mvn process-resources liquibase:update</code></pre>
 </div>
 </div>
 </div>
@@ -721,19 +721,19 @@ changeLogFile=db/changelog/db.changelog-master.xml <i class="conum" data-value="
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="yaml">spring.datasource:
-  url: jdbc:postgresql://localhost:5432/pizzashop
-  username: postgres
-  password: mysecretpassword
-  driver-class-name: org.postgresql.Driver
-  hikari: <i class="conum" data-value="1"></i><b>(1)</b>
-    maximum-pool-size: 10
+<pre class="rouge highlight"><code data-lang="yaml"><span class="s">spring.datasource</span><span class="pi">:</span>
+  <span class="na">url</span><span class="pi">:</span> <span class="s">jdbc:postgresql://localhost:5432/pizzashop</span>
+  <span class="na">username</span><span class="pi">:</span> <span class="s">postgres</span>
+  <span class="na">password</span><span class="pi">:</span> <span class="s">mysecretpassword</span>
+  <span class="na">driver-class-name</span><span class="pi">:</span> <span class="s">org.postgresql.Driver</span>
+  <span class="na">hikari</span><span class="pi">:</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="na">maximum-pool-size</span><span class="pi">:</span> <span class="m">10</span>
 
 
-# Hibernate settings
-spring.jpa.show-sql: true <i class="conum" data-value="2"></i><b>(2)</b>
-spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-spring.jpa.properties.hibernate.hbm2ddl.auto: validate <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+<span class="c1"># Hibernate settings</span>
+<span class="s">spring.jpa.show-sql</span><span class="pi">:</span> <span class="no">true</span> <i class="conum" data-value="2"></i><b>(2)</b>
+<span class="s">spring.jpa.properties.hibernate.dialect</span><span class="pi">:</span> <span class="s">org.hibernate.dialect.PostgreSQLDialect</span>
+<span class="s">spring.jpa.properties.hibernate.hbm2ddl.auto</span><span class="pi">:</span> <span class="s">validate</span> <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -784,13 +784,13 @@ spring.jpa.properties.hibernate.hbm2ddl.auto: validate <i class="conum" data-val
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="shell">git clone https://github.com/kermoss/kermoss.git
-cd kermoss
-mvn clean install <i class="conum" data-value="1"></i><b>(1)</b>
-cd saga-worker/target
-java -jar saga-worker-${version}.jar --spring.profiles.active=dev,shop <i class="conum" data-value="2"></i><b>(2)</b>
-java -jar saga-worker-${version}.jar --spring.profiles.active=dev,ship <i class="conum" data-value="3"></i><b>(3)</b>
-java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+<pre class="rouge highlight"><code data-lang="shell">git clone https://github.com/kermoss/kermoss.git
+<span class="nb">cd </span>kermoss
+mvn clean <span class="nb">install <i class="conum" data-value="1"></i><b>(1)</b>
+cd </span>saga-worker/target
+java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span class="nv">version</span><span class="k">}</span>.jar <span class="nt">--spring</span>.profiles.active<span class="o">=</span>dev,shop <i class="conum" data-value="2"></i><b>(2)</b>
+java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span class="nv">version</span><span class="k">}</span>.jar <span class="nt">--spring</span>.profiles.active<span class="o">=</span>dev,ship <i class="conum" data-value="3"></i><b>(3)</b>
+java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span class="nv">version</span><span class="k">}</span>.jar <span class="nt">--spring</span>.profiles.active<span class="o">=</span>dev,market <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -828,7 +828,7 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <i clas
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="shell">java -jar saga-worker-${version}.jar --spring.profiles.active=dev,single <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+<pre class="rouge highlight"><code data-lang="shell">java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span class="nv">version</span><span class="k">}</span>.jar <span class="nt">--spring</span>.profiles.active<span class="o">=</span>dev,single <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -902,34 +902,63 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <i clas
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="java">@Component
-public class OrderPizzaStateWorker extends GlobalTransactionWorker&lt;OrderPizzaReceivedEvent, OrderPizzaReadyEvent&gt; {
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="code"><pre><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrderPizzaStateWorker</span> <span class="kd">extends</span> <span class="nc">GlobalTransactionWorker</span><span class="o">&lt;</span><span class="nc">OrderPizzaReceivedEvent</span><span class="o">,</span> <span class="nc">OrderPizzaReadyEvent</span><span class="o">&gt;</span> <span class="o">{</span>
 
-    public OrderPizzaStateWorker() {
-        super(new WorkerMeta("OrderPizzaService")); <i class="conum" data-value="1"></i><b>(1)</b>
-    }
+    <span class="kd">public</span> <span class="nf">OrderPizzaStateWorker</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="k">new</span> <span class="nc">WorkerMeta</span><span class="o">(</span><span class="s">"OrderPizzaService"</span><span class="o">));</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="o">}</span>
 
-    @Override
-    @BusinessGlobalTransactional <i class="conum" data-value="2"></i><b>(2)</b>
-    public GlobalTransactionStepDefinition onStart(OrderPizzaReceivedEvent orderPizzaReceivedEvent)  { <i class="conum" data-value="3"></i><b>(3)</b>
-        return GlobalTransactionStepDefinition.builder() <i class="conum" data-value="4"></i><b>(4)</b>
-                .in(orderPizzaReceivedEvent)<i class="conum" data-value="5"></i><b>(5)</b>
-                .meta(this.meta)<i class="conum" data-value="6"></i><b>(6)</b>
-                .process(Optional.empty())<i class="conum" data-value="7"></i><b>(7)</b>
-                .blow(Stream.of(new OrderPizzaReadyEvent(orderPizzaReceivedEvent.getCartId())))<i class="conum" data-value="8"></i><b>(8)</b>
-                .build();
-    }
+    <span class="nd">@Override</span>
+    <span class="nd">@BusinessGlobalTransactional</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="kd">public</span> <span class="nc">GlobalTransactionStepDefinition</span> <span class="nf">onStart</span><span class="o">(</span><span class="nc">OrderPizzaReceivedEvent</span> <span class="n">orderPizzaReceivedEvent</span><span class="o">)</span>  <span class="o">{</span> <i class="conum" data-value="3"></i><b>(3)</b>
+        <span class="k">return</span> <span class="nc">GlobalTransactionStepDefinition</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span> <i class="conum" data-value="4"></i><b>(4)</b>
+                <span class="o">.</span><span class="na">in</span><span class="o">(</span><span class="n">orderPizzaReceivedEvent</span><span class="o">)</span><i class="conum" data-value="5"></i><b>(5)</b>
+                <span class="o">.</span><span class="na">meta</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">meta</span><span class="o">)</span><i class="conum" data-value="6"></i><b>(6)</b>
+                <span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="nc">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">())</span><i class="conum" data-value="7"></i><b>(7)</b>
+                <span class="o">.</span><span class="na">blow</span><span class="o">(</span><span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="k">new</span> <span class="nc">OrderPizzaReadyEvent</span><span class="o">(</span><span class="n">orderPizzaReceivedEvent</span><span class="o">.</span><span class="na">getCartId</span><span class="o">())))</span><i class="conum" data-value="8"></i><b>(8)</b>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
 
-    @Override
-    @CommitBusinessGlobalTransactional <i class="conum" data-value="9"></i><b>(9)</b>
-    public GlobalTransactionStepDefinition onComplete(OrderPizzaReadyEvent orderPizzaReadyEvent ) { <i class="conum" data-value="10"></i><b>(10)</b>
-        return GlobalTransactionStepDefinition.builder()
-                .in(orderPizzaReadyEvent)
-                .meta(this.meta)
-                .process(Optional.empty())
-                .build();
-    }
-}</code></pre>
+    <span class="nd">@Override</span>
+    <span class="nd">@CommitBusinessGlobalTransactional</span> <i class="conum" data-value="9"></i><b>(9)</b>
+    <span class="kd">public</span> <span class="nc">GlobalTransactionStepDefinition</span> <span class="nf">onComplete</span><span class="o">(</span><span class="nc">OrderPizzaReadyEvent</span> <span class="n">orderPizzaReadyEvent</span> <span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="10"></i><b>(10)</b>
+        <span class="k">return</span> <span class="nc">GlobalTransactionStepDefinition</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">in</span><span class="o">(</span><span class="n">orderPizzaReadyEvent</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">meta</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">meta</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="nc">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -988,14 +1017,23 @@ public class OrderPizzaStateWorker extends GlobalTransactionWorker&lt;OrderPizza
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="java">@Autowired <i class="conum" data-value="1"></i><b>(1)</b>
-ApplicationEventPublisher applicationEventPublisher;
+<pre class="rouge highlight"><code data-lang="java"><table class="linenotable"><tbody><tr><td class="linenos gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="code"><pre><span class="nd">@Autowired</span> <i class="conum" data-value="1"></i><b>(1)</b>
+<span class="nc">ApplicationEventPublisher</span> <span class="n">applicationEventPublisher</span><span class="o">;</span>
 
-@Transactional <i class="conum" data-value="2"></i><b>(2)</b>
-    public void prepareOrder(Cart cart){
-        orders.put(cart.getId(), cart);
-        applicationEventPublisher.publishEvent(new OrderPizzaReceivedEvent(cart.getId()));<i class="conum" data-value="3"></i><b>(3)</b>
-    }</code></pre>
+<span class="nd">@Transactional</span> <i class="conum" data-value="2"></i><b>(2)</b>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">prepareOrder</span><span class="o">(</span><span class="nc">Cart</span> <span class="n">cart</span><span class="o">){</span>
+        <span class="n">orders</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">cart</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span> <span class="n">cart</span><span class="o">);</span>
+        <span class="n">applicationEventPublisher</span><span class="o">.</span><span class="na">publishEvent</span><span class="o">(</span><span class="k">new</span> <span class="nc">OrderPizzaReceivedEvent</span><span class="o">(</span><span class="n">cart</span><span class="o">.</span><span class="na">getId</span><span class="o">()));</span><i class="conum" data-value="3"></i><b>(3)</b>
+    <span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1037,8 +1075,219 @@ ApplicationEventPublisher applicationEventPublisher;
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-20 23:53:46 +0100
+Last updated 2021-03-21 03:09:51 +0100
 </div>
 </div>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s, pre.rouge .sa, pre.rouge .dl {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
 </body>
 </html>
