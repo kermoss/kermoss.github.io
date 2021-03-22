@@ -1145,7 +1145,7 @@ to carry out this operation you should create a decoder service allowing to prod
 <div class="sect2">
 <h3 id="_how_to_configure_the_decoder_service">How to configure the decoder service</h3>
 <div class="paragraph">
-<p>Pour que votre service decoder soit capable de créer un évenement à base l&#8217;arrivé d&#8217;une command il faut l&#8217;enregister et le mapper avec le subject de la dite command dans un composant that extends de la class DecoderRegistry .</p>
+<p>So that your <strong> decoder service </strong> is able to produce an event when a command arrives, it is necessary to register it and map it with the subject of the command in a dedicated component for the configuration, see the code java below .</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -1223,7 +1223,7 @@ public class DecoderConfiguration extends DecoderRegistry { <b class="conum">(1)
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-22 22:59:48 +0100
+Last updated 2021-03-23 00:35:21 +0100
 </div>
 </div>
 </body>
