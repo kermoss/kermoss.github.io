@@ -729,7 +729,7 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <b clas
 <p><strong> worker </strong> class that extends LocalTransactionWorker allowing to start or close or rollback (compensate) a local transaction by listening on events.</p>
 </li>
 <li>
-<p>Each <strong> worker </strong> communicate internally by events and can send commands to remote BFMs all this happens through <strong> TransactionStepDefinition </strong> these are in a way the equivalent of RouteBuilder in the camel project.</p>
+<p>Each <strong> worker </strong> communicate internally by events and can send commands to remote BFMs all this happens through a chain of operators <strong> TransactionStepDefinition </strong> these are in a way the equivalent of RouteBuilder in the camel project.</p>
 </li>
 </ul>
 </div>
@@ -779,7 +779,7 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <b clas
 <p>package containing the commands to send to remote BFMs</p>
 </li>
 <li>
-<p>package contains decoder services; when a command lands in a remote microservice, the decoder service creates an event based on the commands subject (a subject is only a key that allows the mapping with the distination of the command), for this purpose a given worker (global or local transaction) receives this command by listening on this event.</p>
+<p>package contains decoder services; when a command lands in a remote microservice, the decoder service creates an event based on the commands subject (a subject is only a key that allows the mapping with an event), for this purpose a given worker (global or local transaction) receives this command by listening on this event.</p>
 </li>
 <li>
 <p>your domain business logic (model + repositories + services)</p>
@@ -919,7 +919,7 @@ ApplicationEventPublisher applicationEventPublisher;
 </div>
 </div>
 <div class="sect1">
-<h2 id="_link_a_global_transaction_context">Link a global transaction context</h2>
+<h2 id="_bind_a_global_transaction_context">Bind a global transaction context</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Supposing that in some situation you want to launch an event from your business logic to call a worker (ex: play, commit, or rollback a localTransaction), in this case you need a way to attach the context of a global transaction, by persisting its id in your business model at this level you can communicate with your BFM, outside the context of the global transaction</p>
@@ -978,9 +978,239 @@ public class BakingService {
 <div class="sect1">
 <h2 id="_send_a_command_to_a_remote_bfm">Send a command To a remote BFM</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Sending a command to a remote BFM is quite simple with kermoss, just create a class that extends BaseTransactionCommand and choose a convinient string <strong><em>subject</em></strong> which would later be used by the remote BFM&#8217;s decoder service to create an event (kermoss will publish this event to the various subscribers in the BFM in order to receive this command). The  <strong><em>destination</em></strong> key parameter that you will then map it with an target address (HTTP, or a Kafka topic) depending on the layer transportation of your preference. then you use the <strong> send </strong> operator of the <strong> TransactionStepDefinition </strong> pipeline allowing to send a command stream either from a global or a local transaction</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Override
+    @SwitchBusinessLocalTransactional
+    public LocalTransactionStepDefinition onNext(BoxDeliverFinishedEvent onNextEvent) {
+       String invoiceRef="5b6a668c-152a-44b4-8fbd-8819bc63aebb";
+    	PayBillCommand cmd = new PayBillCommand("pay-delivery-service", "",new Bill(1, invoiceRef)
+                , "pizza-shop"); <b class="conum">(1)</b>
+        return LocalTransactionStepDefinition.builder()
+                .in(onNextEvent)
+                .blow(Stream.of(new BoxDelivredEvent()))<b class="conum">(2)</b>
+                .meta(this.meta)
+                .send(Stream.of(cmd)) <b class="conum">(3)</b>
+                .build();
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>pizzaship microservice configure the PayBillCommand command with the <strong>destination</strong> key <strong>pizza-shop</strong> to send it to the pizzashop microservice &amp; <strong> subject </strong> key <strong>"pay-delivery-service"</strong> to trigger an event by the decoder service of the remote BFM</p>
+</li>
+<li>
+<p>triggers the BoxDelivredEvent</p>
+</li>
+<li>
+<p>the operator <strong>send(Stream.of(cmd))</strong> is used to send the PayBillCommand command</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
 <div class="sect2">
-<h3 id="_configure_your_layer_transport">Configure your layer transport</h3>
+<h3 id="_map_a_commands_subject_with_a_target_address">Map a command&#8217;s subject with a target address</h3>
+<div class="paragraph">
+<p>Kermoss routes the commands to the remote BFMs based on their destination key, the destination key must be mapped with an address (HTTP or service name in consul or eurika registry services, kafka topic) in your configuration file.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">kermoss:
+  service-name: pizza-shop
+  transport:
+    default-layer: http <b class="conum">(1)</b>
+  sources:
+    shippement-service: <b class="conum">(2)</b>
+      feign: shippement-service <b class="conum">(3)</b>
+      http: "http://localhost:8083/command-executor/command" <b class="conum">(4)</b>
+      kafka: io.kermoss.topics.pizzashop.shippementservice <b class="conum">(5)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>choose your suitable transport layer; the possible values ​​are: kafka for the kafka broker, or if you prefer the HTTP transport layer, use feign or http</p>
+</li>
+<li>
+<p>this is the subject key of the commad to map to a target address</p>
+</li>
+<li>
+<p>if the <strong> feign </strong> option is chosen as a value for the <strong> transport.default-layer </strong> property, the <strong> "shippement-service" </strong> value of the <strong> feign </strong> key should match the service name of the microservice (pizza ship) in your service catalog (eurika, consul)</p>
+</li>
+<li>
+<p>use the "http" key mapped to an http address of the "pizza ship" microservice if only if the <strong> http </strong> option is chosen as a value for the <strong> transport.default-layer </strong> property, the following path "/ command-executor / command" must be included in your http url</p>
+</li>
+<li>
+<p>the value of the kafka key matches the name of the kafka topic if only if the <strong> kafka </strong> option is configured as a value for the <strong> transport.default-layer </strong> property.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="ulist">
+<div class="title">transport.default-layer property:</div>
+<ul>
+<li>
+<p>We recommend that you adopt the feign option if your choice of transport layer will be HTTP and you later want to deploy your microservice with kermoss in a production environment.</p>
+</li>
+<li>
+<p>Use http option in your test or development environment, or if you do not have a registry service</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_receive_a_command_from_a_remote_bfm">Receive a command from a remote BFM</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>if you have opted for kafka to be the default transport layer for your project, in this case it will be necessary to add this following configuration part in your yaml or properties file:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">kermoss:
+  service-name: pizza-shop
+  transport:
+    default-layer: kafka
+  sinks: <b class="conum">(1)</b>
+    pizza-shop:
+      kafka: io.kermoss.topics.pizzashop <b class="conum">(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>sinks: wraps all the possible topics to consume, as a source of commands for your BFM</p>
+</li>
+<li>
+<p>tells kermoss if you have chosen the kafka value for the transport.default-layer property to consume the commands coming from the topic <strong> io.kermoss.topics.pizzashop </strong></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>As already explained previously, when a command lands on your microservice, it is necessary to trigger an event indicating to the BFM that there is a new command waiting in the pool to be consumed by workers that subscribe to this event.
+to carry out this operation you should create a decoder service allowing to produce this event.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class DeliverPizzaDecoder implements BaseDecoder {
 
+    @Override
+    public BaseTransactionEvent decode(CommandMeta meta) { <b class="conum">(1)</b>
+        BoxArrivedEvent deliverPizzaStartedEvent = new BoxArrivedEvent();<b class="conum">(2)</b>
+        return deliverPizzaStartedEvent;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>contains the mata data on the command</p>
+</li>
+<li>
+<p>produce an event and then drop it off by kermoss on an event bus, so workers who subscribe to this type of event can consume the command</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_how_to_configure_the_decoder_service">How to configure the decoder service</h3>
+<div class="paragraph">
+<p>Pour que votre service decoder soit capable de créer un évenement à base l&#8217;arrivé d&#8217;une command il faut l&#8217;enregister et le mapper avec le subject de la dite command dans un composant that extends de la class DecoderRegistry .</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Configuration
+public class DecoderConfiguration extends DecoderRegistry { <b class="conum">(1)</b>
+
+    @PostConstruct
+    public void setup() {
+        DeliverPizzaDecoder decoder1 = new DeliverPizzaDecoder();
+        this.put("deliver-pizza", decoder1); <b class="conum">(2)</b>
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>here you can put all the mapping of your decoder services in your microservice</p>
+</li>
+<li>
+<p>"deliver-pizza" subject mapping with the DeliverPizzaDecoder</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_commands_consumption">Commands consumption .</h3>
+<div class="paragraph">
+<p>In the end, the command becomes visible and ready to be consumed by all the workers of your BFM who are subscribed to the BoxArrivedEvent event</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class DeliverBoxWorker extends GlobalTransactionWorker&lt;BoxArrivedEvent, BoxDelivredEvent&gt; {
+ @Override
+    @BusinessGlobalTransactional
+    public GlobalTransactionStepDefinition onStart(BoxArrivedEvent boxArrivedEvent){ <b class="conum">(1)</b>
+        return GlobalTransactionStepDefinition.builder()
+                .in(boxArrivedEvent)
+                .meta(this.meta)
+                .receive(ToDilever.class, x -&gt; System.out.println(x.toString())) <b class="conum">(2)</b>
+                .build();
+    }
+ ...
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>subscribe to the <strong> boxArrivedEvent </strong> event produced by the decoder Service <strong> DeliverPizzaDecoder </strong></p>
+</li>
+<li>
+<p>consumption of the command : ToDilever</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -993,7 +1223,7 @@ public class BakingService {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-21 23:22:44 +0100
+Last updated 2021-03-22 22:59:48 +0100
 </div>
 </div>
 </body>

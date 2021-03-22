@@ -470,10 +470,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_kermoss_project_organization">2.7. Kermoss : project organization</a></li>
 <li><a href="#_create_your_first_globaltransaction_worker">2.8. Create your first globalTransaction worker</a></li>
 <li><a href="#_begin_a_new_global_transaction">2.9. Begin a new Global transaction</a></li>
-<li><a href="#_link_a_global_transaction_context">2.10. Link a global transaction context</a></li>
+<li><a href="#_bind_a_global_transaction_context">2.10. Bind a global transaction context</a></li>
 <li><a href="#_call_your_bfm_workers_from_outside">2.11. Call your BFM workers from outside</a></li>
 <li><a href="#_send_a_command_to_a_remote_bfm">2.12. Send a command To a remote BFM</a></li>
-<li><a href="#_enlist_a_local_transaction_worker">2.13. Enlist a Local Transaction Worker</a></li>
+<li><a href="#_receive_a_command_from_a_remote_bfm">2.13. Receive a command from a remote BFM</a></li>
+<li><a href="#_enlist_a_local_transaction_worker">2.14. Enlist a Local Transaction Worker</a></li>
 </ul>
 </li>
 </ul>
@@ -886,7 +887,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 <p><strong> worker </strong> class that extends LocalTransactionWorker allowing to start or close or rollback (compensate) a local transaction by listening on events.</p>
 </li>
 <li>
-<p>Each <strong> worker </strong> communicate internally by events and can send commands to remote BFMs all this happens through <strong> TransactionStepDefinition </strong> these are in a way the equivalent of RouteBuilder in the camel project.</p>
+<p>Each <strong> worker </strong> communicate internally by events and can send commands to remote BFMs all this happens through a chain of operators <strong> TransactionStepDefinition </strong> these are in a way the equivalent of RouteBuilder in the camel project.</p>
 </li>
 </ul>
 </div>
@@ -939,7 +940,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>package contains decoder services; when a command lands in a remote microservice, the decoder service creates an event based on the commands subject (a subject is only a key that allows the mapping with the distination of the command), for this purpose a given worker (global or local transaction) receives this command by listening on this event.</td>
+<td>package contains decoder services; when a command lands in a remote microservice, the decoder service creates an event based on the commands subject (a subject is only a key that allows the mapping with an event), for this purpose a given worker (global or local transaction) receives this command by listening on this event.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
@@ -1131,7 +1132,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_link_a_global_transaction_context"><a class="anchor" href="#_link_a_global_transaction_context"></a>2.10. Link a global transaction context</h3>
+<h3 id="_bind_a_global_transaction_context"><a class="anchor" href="#_bind_a_global_transaction_context"></a>2.10. Bind a global transaction context</h3>
 <div class="paragraph">
 <p>Supposing that in some situation you want to launch an event from your business logic to call a worker (ex: play, commit, or rollback a localTransaction), in this case you need a way to attach the context of a global transaction, by persisting its id in your business model at this level you can communicate with your BFM, outside the context of the global transaction</p>
 </div>
@@ -1188,13 +1189,257 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 <div class="sect2">
 <h3 id="_send_a_command_to_a_remote_bfm"><a class="anchor" href="#_send_a_command_to_a_remote_bfm"></a>2.12. Send a command To a remote BFM</h3>
+<div class="paragraph">
+<p>Sending a command to a remote BFM is quite simple with kermoss, just create a class that extends BaseTransactionCommand and choose a convinient string <strong><em>subject</em></strong> which would later be used by the remote BFM&#8217;s decoder service to create an event (kermoss will publish this event to the various subscribers in the BFM in order to receive this command). The  <strong><em>destination</em></strong> key parameter that you will then map it with an target address (HTTP, or a Kafka topic) depending on the layer transportation of your preference. then you use the <strong> send </strong> operator of the <strong> TransactionStepDefinition </strong> pipeline allowing to send a command stream either from a global or a local transaction</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Override</span>
+    <span class="nd">@SwitchBusinessLocalTransactional</span>
+    <span class="kd">public</span> <span class="nc">LocalTransactionStepDefinition</span> <span class="nf">onNext</span><span class="o">(</span><span class="nc">BoxDeliverFinishedEvent</span> <span class="n">onNextEvent</span><span class="o">)</span> <span class="o">{</span>
+       <span class="nc">String</span> <span class="n">invoiceRef</span><span class="o">=</span><span class="s">"5b6a668c-152a-44b4-8fbd-8819bc63aebb"</span><span class="o">;</span>
+    	<span class="nc">PayBillCommand</span> <span class="n">cmd</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PayBillCommand</span><span class="o">(</span><span class="s">"pay-delivery-service"</span><span class="o">,</span> <span class="s">""</span><span class="o">,</span><span class="k">new</span> <span class="nc">Bill</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">invoiceRef</span><span class="o">)</span>
+                <span class="o">,</span> <span class="s">"pizza-shop"</span><span class="o">);</span> <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="k">return</span> <span class="nc">LocalTransactionStepDefinition</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">in</span><span class="o">(</span><span class="n">onNextEvent</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">blow</span><span class="o">(</span><span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="k">new</span> <span class="nc">BoxDelivredEvent</span><span class="o">()))</span><i class="conum" data-value="2"></i><b>(2)</b>
+                <span class="o">.</span><span class="na">meta</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">meta</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">cmd</span><span class="o">))</span> <i class="conum" data-value="3"></i><b>(3)</b>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>pizzaship microservice configure the PayBillCommand command with the <strong>destination</strong> key <strong>pizza-shop</strong> to send it to the pizzashop microservice &amp; <strong> subject </strong> key <strong>"pay-delivery-service"</strong> to trigger an event by the decoder service of the remote BFM</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>triggers the BoxDelivredEvent</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>the operator <strong>send(Stream.of(cmd))</strong> is used to send the PayBillCommand command</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 <div class="sect3">
-<h4 id="_configure_your_layer_transport"><a class="anchor" href="#_configure_your_layer_transport"></a>2.12.1. Configure your layer transport</h4>
-
+<h4 id="_map_a_commands_subject_with_a_target_address"><a class="anchor" href="#_map_a_commands_subject_with_a_target_address"></a>2.12.1. Map a command&#8217;s subject with a target address</h4>
+<div class="paragraph">
+<p>Kermoss routes the commands to the remote BFMs based on their destination key, the destination key must be mapped with an address (HTTP or service name in consul or eurika registry services, kafka topic) in your configuration file.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">kermoss</span><span class="pi">:</span>
+  <span class="na">service-name</span><span class="pi">:</span> <span class="s">pizza-shop</span>
+  <span class="na">transport</span><span class="pi">:</span>
+    <span class="na">default-layer</span><span class="pi">:</span> <span class="s">http</span> <i class="conum" data-value="1"></i><b>(1)</b>
+  <span class="na">sources</span><span class="pi">:</span>
+    <span class="na">shippement-service</span><span class="pi">:</span> <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="na">feign</span><span class="pi">:</span> <span class="s">shippement-service</span> <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="na">http</span><span class="pi">:</span> <span class="s2">"</span><span class="s">http://localhost:8083/command-executor/command"</span> <i class="conum" data-value="4"></i><b>(4)</b>
+      <span class="na">kafka</span><span class="pi">:</span> <span class="s">io.kermoss.topics.pizzashop.shippementservice</span> <i class="conum" data-value="5"></i><b>(5)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>choose your suitable transport layer; the possible values ​​are: kafka for the kafka broker, or if you prefer the HTTP transport layer, use feign or http</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>this is the subject key of the commad to map to a target address</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>if the <strong> feign </strong> option is chosen as a value for the <strong> transport.default-layer </strong> property, the <strong> "shippement-service" </strong> value of the <strong> feign </strong> key should match the service name of the microservice (pizza ship) in your service catalog (eurika, consul)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>use the "http" key mapped to an http address of the "pizza ship" microservice if only if the <strong> http </strong> option is chosen as a value for the <strong> transport.default-layer </strong> property, the following path "/ command-executor / command" must be included in your http url</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>the value of the kafka key matches the name of the kafka topic if only if the <strong> kafka </strong> option is configured as a value for the <strong> transport.default-layer </strong> property.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<div class="title">transport.default-layer property:</div>
+<ul>
+<li>
+<p>We recommend that you adopt the feign option if your choice of transport layer will be HTTP and you later want to deploy your microservice with kermoss in a production environment.</p>
+</li>
+<li>
+<p>Use http option in your test or development environment, or if you do not have a registry service</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_enlist_a_local_transaction_worker"><a class="anchor" href="#_enlist_a_local_transaction_worker"></a>2.13. Enlist a Local Transaction Worker</h3>
+<h3 id="_receive_a_command_from_a_remote_bfm"><a class="anchor" href="#_receive_a_command_from_a_remote_bfm"></a>2.13. Receive a command from a remote BFM</h3>
+<div class="paragraph">
+<p>if you have opted for kafka to be the default transport layer for your project, in this case it will be necessary to add this following configuration part in your yaml or properties file:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">kermoss</span><span class="pi">:</span>
+  <span class="na">service-name</span><span class="pi">:</span> <span class="s">pizza-shop</span>
+  <span class="na">transport</span><span class="pi">:</span>
+    <span class="na">default-layer</span><span class="pi">:</span> <span class="s">kafka</span>
+  <span class="na">sinks</span><span class="pi">:</span> <i class="conum" data-value="1"></i><b>(1)</b>
+    <span class="na">pizza-shop</span><span class="pi">:</span>
+      <span class="na">kafka</span><span class="pi">:</span> <span class="s">io.kermoss.topics.pizzashop</span> <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>sinks: wraps all the possible topics to consume, as a source of commands for your BFM</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>tells kermoss if you have chosen the kafka value for the transport.default-layer property to consume the commands coming from the topic <strong> io.kermoss.topics.pizzashop </strong></td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>As already explained previously, when a command lands on your microservice, it is necessary to trigger an event indicating to the BFM that there is a new command waiting in the pool to be consumed by workers that subscribe to this event.
+to carry out this operation you should create a decoder service allowing to produce this event.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeliverPizzaDecoder</span> <span class="kd">implements</span> <span class="nc">BaseDecoder</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">BaseTransactionEvent</span> <span class="nf">decode</span><span class="o">(</span><span class="nc">CommandMeta</span> <span class="n">meta</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="nc">BoxArrivedEvent</span> <span class="n">deliverPizzaStartedEvent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BoxArrivedEvent</span><span class="o">();</span><i class="conum" data-value="2"></i><b>(2)</b>
+        <span class="k">return</span> <span class="n">deliverPizzaStartedEvent</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>contains the mata data on the command</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>produce an event and then drop it off by kermoss on an event bus, so workers who subscribe to this type of event can consume the command</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_how_to_configure_the_decoder_service"><a class="anchor" href="#_how_to_configure_the_decoder_service"></a>2.13.1. How to configure the decoder service</h4>
+<div class="paragraph">
+<p>Pour que votre service decoder soit capable de créer un évenement à base l&#8217;arrivé d&#8217;une command il faut l&#8217;enregister et le mapper avec le subject de la dite command dans un composant that extends de la class DecoderRegistry .</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DecoderConfiguration</span> <span class="kd">extends</span> <span class="nc">DecoderRegistry</span> <span class="o">{</span> <i class="conum" data-value="1"></i><b>(1)</b>
+
+    <span class="nd">@PostConstruct</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">DeliverPizzaDecoder</span> <span class="n">decoder1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DeliverPizzaDecoder</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"deliver-pizza"</span><span class="o">,</span> <span class="n">decoder1</span><span class="o">);</span> <i class="conum" data-value="2"></i><b>(2)</b>
+
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>here you can put all the mapping of your decoder services in your microservice</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>"deliver-pizza" subject mapping with the DeliverPizzaDecoder</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_commands_consumption"><a class="anchor" href="#_commands_consumption"></a>2.13.2. Commands consumption .</h4>
+<div class="paragraph">
+<p>In the end, the command becomes visible and ready to be consumed by all the workers of your BFM who are subscribed to the BoxArrivedEvent event</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeliverBoxWorker</span> <span class="kd">extends</span> <span class="nc">GlobalTransactionWorker</span><span class="o">&lt;</span><span class="nc">BoxArrivedEvent</span><span class="o">,</span> <span class="nc">BoxDelivredEvent</span><span class="o">&gt;</span> <span class="o">{</span>
+ <span class="nd">@Override</span>
+    <span class="nd">@BusinessGlobalTransactional</span>
+    <span class="kd">public</span> <span class="nc">GlobalTransactionStepDefinition</span> <span class="nf">onStart</span><span class="o">(</span><span class="nc">BoxArrivedEvent</span> <span class="n">boxArrivedEvent</span><span class="o">){</span> <i class="conum" data-value="1"></i><b>(1)</b>
+        <span class="k">return</span> <span class="nc">GlobalTransactionStepDefinition</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">in</span><span class="o">(</span><span class="n">boxArrivedEvent</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">meta</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">meta</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="nc">ToDilever</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">toString</span><span class="o">()))</span> <i class="conum" data-value="2"></i><b>(2)</b>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+ <span class="o">...</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>subscribe to the <strong> boxArrivedEvent </strong> event produced by the decoder Service <strong> DeliverPizzaDecoder </strong></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>consumption of the command : ToDilever</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_enlist_a_local_transaction_worker"><a class="anchor" href="#_enlist_a_local_transaction_worker"></a>2.14. Enlist a Local Transaction Worker</h3>
 
 </div>
 </div>
@@ -1202,40 +1447,44 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-21 21:22:38 +0100
+Last updated 2021-03-22 23:03:05 +0100
 </div>
 </div>
 <style>
 pre.rouge table td { padding: 5px; }
 pre.rouge table pre { margin: 0; }
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #75715e;
+  font-style: italic;
+}
 pre.rouge .cm {
-  color: #999988;
+  color: #75715e;
+  font-style: italic;
+}
+pre.rouge .c1 {
+  color: #75715e;
   font-style: italic;
 }
 pre.rouge .cp {
-  color: #999999;
+  color: #75715e;
   font-weight: bold;
-}
-pre.rouge .c1 {
-  color: #999988;
-  font-style: italic;
 }
 pre.rouge .cs {
-  color: #999999;
+  color: #75715e;
   font-weight: bold;
-  font-style: italic;
-}
-pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
-  color: #999988;
   font-style: italic;
 }
 pre.rouge .err {
-  color: #a61717;
-  background-color: #e3d2d2;
+  color: #960050;
+  background-color: #1e0010;
+}
+pre.rouge .gi {
+  color: #ffffff;
+  background-color: #324932;
 }
 pre.rouge .gd {
-  color: #000000;
-  background-color: #ffdddd;
+  color: #ffffff;
+  background-color: #493131;
 }
 pre.rouge .ge {
   color: #000000;
@@ -1244,12 +1493,11 @@ pre.rouge .ge {
 pre.rouge .gr {
   color: #aa0000;
 }
+pre.rouge .gt {
+  color: #aa0000;
+}
 pre.rouge .gh {
   color: #999999;
-}
-pre.rouge .gi {
-  color: #000000;
-  background-color: #ddffdd;
 }
 pre.rouge .go {
   color: #888888;
@@ -1263,157 +1511,155 @@ pre.rouge .gs {
 pre.rouge .gu {
   color: #aaaaaa;
 }
-pre.rouge .gt {
-  color: #aa0000;
+pre.rouge .k, pre.rouge .kv {
+  color: #66d9ef;
+  font-weight: bold;
 }
 pre.rouge .kc {
-  color: #000000;
+  color: #66d9ef;
   font-weight: bold;
 }
 pre.rouge .kd {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kn {
-  color: #000000;
+  color: #66d9ef;
   font-weight: bold;
 }
 pre.rouge .kp {
-  color: #000000;
+  color: #66d9ef;
   font-weight: bold;
 }
 pre.rouge .kr {
-  color: #000000;
+  color: #66d9ef;
   font-weight: bold;
 }
 pre.rouge .kt {
-  color: #445588;
+  color: #66d9ef;
   font-weight: bold;
 }
-pre.rouge .k, pre.rouge .kv {
-  color: #000000;
+pre.rouge .kn {
+  color: #f92672;
   font-weight: bold;
-}
-pre.rouge .mf {
-  color: #009999;
-}
-pre.rouge .mh {
-  color: #009999;
-}
-pre.rouge .il {
-  color: #009999;
-}
-pre.rouge .mi {
-  color: #009999;
-}
-pre.rouge .mo {
-  color: #009999;
-}
-pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
-  color: #009999;
-}
-pre.rouge .sb {
-  color: #d14;
-}
-pre.rouge .sc {
-  color: #d14;
-}
-pre.rouge .sd {
-  color: #d14;
-}
-pre.rouge .s2 {
-  color: #d14;
-}
-pre.rouge .se {
-  color: #d14;
-}
-pre.rouge .sh {
-  color: #d14;
-}
-pre.rouge .si {
-  color: #d14;
-}
-pre.rouge .sx {
-  color: #d14;
-}
-pre.rouge .sr {
-  color: #009926;
-}
-pre.rouge .s1 {
-  color: #d14;
-}
-pre.rouge .ss {
-  color: #990073;
-}
-pre.rouge .s, pre.rouge .sa, pre.rouge .dl {
-  color: #d14;
-}
-pre.rouge .na {
-  color: #008080;
-}
-pre.rouge .bp {
-  color: #999999;
-}
-pre.rouge .nb {
-  color: #0086B3;
-}
-pre.rouge .nc {
-  color: #445588;
-  font-weight: bold;
-}
-pre.rouge .no {
-  color: #008080;
-}
-pre.rouge .nd {
-  color: #3c5d5d;
-  font-weight: bold;
-}
-pre.rouge .ni {
-  color: #800080;
-}
-pre.rouge .ne {
-  color: #990000;
-  font-weight: bold;
-}
-pre.rouge .nf, pre.rouge .fm {
-  color: #990000;
-  font-weight: bold;
-}
-pre.rouge .nl {
-  color: #990000;
-  font-weight: bold;
-}
-pre.rouge .nn {
-  color: #555555;
-}
-pre.rouge .nt {
-  color: #000080;
-}
-pre.rouge .vc {
-  color: #008080;
-}
-pre.rouge .vg {
-  color: #008080;
-}
-pre.rouge .vi {
-  color: #008080;
-}
-pre.rouge .nv, pre.rouge .vm {
-  color: #008080;
 }
 pre.rouge .ow {
-  color: #000000;
+  color: #f92672;
   font-weight: bold;
 }
 pre.rouge .o {
-  color: #000000;
+  color: #f92672;
   font-weight: bold;
 }
+pre.rouge .mf {
+  color: #ae81ff;
+}
+pre.rouge .mh {
+  color: #ae81ff;
+}
+pre.rouge .il {
+  color: #ae81ff;
+}
+pre.rouge .mi {
+  color: #ae81ff;
+}
+pre.rouge .mo {
+  color: #ae81ff;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #ae81ff;
+}
+pre.rouge .se {
+  color: #ae81ff;
+}
+pre.rouge .sb {
+  color: #e6db74;
+}
+pre.rouge .sc {
+  color: #e6db74;
+}
+pre.rouge .sd {
+  color: #e6db74;
+}
+pre.rouge .s2 {
+  color: #e6db74;
+}
+pre.rouge .sh {
+  color: #e6db74;
+}
+pre.rouge .si {
+  color: #e6db74;
+}
+pre.rouge .sx {
+  color: #e6db74;
+}
+pre.rouge .sr {
+  color: #e6db74;
+}
+pre.rouge .s1 {
+  color: #e6db74;
+}
+pre.rouge .ss {
+  color: #e6db74;
+}
+pre.rouge .s, pre.rouge .sa, pre.rouge .dl {
+  color: #e6db74;
+}
+pre.rouge .na {
+  color: #a6e22e;
+}
+pre.rouge .nc {
+  color: #a6e22e;
+  font-weight: bold;
+}
+pre.rouge .nd {
+  color: #a6e22e;
+  font-weight: bold;
+}
+pre.rouge .ne {
+  color: #a6e22e;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #a6e22e;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #66d9ef;
+}
+pre.rouge .bp {
+  color: #f8f8f2;
+}
+pre.rouge .nb {
+  color: #f8f8f2;
+}
+pre.rouge .ni {
+  color: #f8f8f2;
+}
+pre.rouge .nn {
+  color: #f8f8f2;
+}
+pre.rouge .vc {
+  color: #f8f8f2;
+}
+pre.rouge .vg {
+  color: #f8f8f2;
+}
+pre.rouge .vi {
+  color: #f8f8f2;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #f8f8f2;
+}
 pre.rouge .w {
-  color: #bbbbbb;
+  color: #f8f8f2;
+}
+pre.rouge .nl {
+  color: #f8f8f2;
+  font-weight: bold;
+}
+pre.rouge .nt {
+  color: #f92672;
 }
 pre.rouge {
-  background-color: #f8f8f8;
+  color: #f8f8f2;
+  background-color: #49483e;
 }
 </style>
 </body>
