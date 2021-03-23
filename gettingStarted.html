@@ -490,8 +490,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_connect_kermoss_to_your_database">connect kermoss to your database</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_connect_kermoss_to_your_database">Connect kermoss to your database</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Kermoss uses <strong> Liquibase </strong> (an open source database change management tool) to manage the versioning of its database schema, if you already have liquibase in your project, you just have to add only this line to your db.changelog-master.xml file</p>
 </div>
@@ -594,6 +597,51 @@ spring.jpa.properties.hibernate.hbm2ddl.auto: validate <b class="conum">(3)</b><
 </li>
 </ol>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_basic_configuration_concepts">Basic configuration concepts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>this part indicates the first concepts to start kermoss within your project, it illustrates the basic and fundamental elements to configure your development or test environment.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">kermoss: <b class="conum">(1)</b>
+  service-name: pizza-shop <b class="conum">(2)</b>
+  transport:
+    default-layer: http <b class="conum">(3)</b>
+    sources:
+      market-service: <b class="conum">(4)</b>
+          http: http://localhost:8081/command-executor/commands <b class="conum">(5)</b>
+      shippement-service:
+           http: http://localhost:8081/command-executor/commands
+      pizza-shop:
+           http: http://localhost:8081/command-executor/commands</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>this is the root of the kermoss properties, at this level you can explore all the properties to configure using the auto-completion of your IDE</p>
+</li>
+<li>
+<p>the name of your microservice or application is used to improve the audit and the level of command tracking, if you omit this option the name of the application of your project will be taken into account.</p>
+</li>
+<li>
+<p>possible values ​​are: kafka, feign, and http</p>
+</li>
+<li>
+<p>the destination key configured at the command level</p>
+</li>
+<li>
+<p>the target address to which kermoss will send the command based on the destination key</p>
+</li>
+</ol>
 </div>
 </div>
 </div>
@@ -794,7 +842,7 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <b clas
 <p>package containing the services of the application layer</p>
 </li>
 <li>
-<p>package containing the BFM as a component, we recommend that worker adhere to the following convention: &lt;serviceName&gt; Worker.java</p>
+<p>package containing the BFM as a component, we recommend that worker adhere to the following convention: &lt;serviceName&gt;Worker.java</p>
 </li>
 <li>
 <p>contains the configuration of kermoss as well as your application</p>
@@ -807,7 +855,7 @@ java -jar saga-worker-${version}.jar --spring.profiles.active=dev,market <b clas
 <h2 id="_create_your_first_globaltransaction_worker">Create your first globalTransaction worker</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You just have to create a class OrderPizzaStateWorker.java (see the example of pizzashop) which extends GlobalTransactionWorker and annotate it with spring @Component annotation</p>
+<p>You just have to create a java class like OrderPizzaStateWorker.java (see the example of pizzashop) which extends GlobalTransactionWorker and annotate it with spring @Component annotation</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -979,7 +1027,10 @@ public class BakingService {
 <h2 id="_send_a_command_to_a_remote_bfm">Send a command To a remote BFM</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Sending a command to a remote BFM is quite simple with kermoss, just create a class that extends BaseTransactionCommand and choose a convinient string <strong><em>subject</em></strong> which would later be used by the remote BFM&#8217;s decoder service to create an event (kermoss will publish this event to the various subscribers in the BFM in order to receive this command). The  <strong><em>destination</em></strong> key parameter that you will then map it with an target address (HTTP, or a Kafka topic) depending on the layer transportation of your preference. then you use the <strong> send </strong> operator of the <strong> TransactionStepDefinition </strong> pipeline allowing to send a command stream either from a global or a local transaction</p>
+<p>Sending a command to a remote BFM is quite simple with kermoss, just create a class that extends BaseTransactionCommand and choose a convinient string <strong><em>subject</em></strong> which would later be used by the remote BFM&#8217;s decoder service to create an event (kermoss will publish this event to the various subscribers in the BFM in order to receive this command). The second important argument is  <strong><em>destination</em></strong> key parameter that you will then map it with an target address (HTTP, or a Kafka topic) depending on the transport layer of your preference.</p>
+</div>
+<div class="paragraph">
+<p>Finally you can call the <strong> send </strong> operator of the <strong> TransactionStepDefinition </strong> pipeline allowing to send a command stream either from a global or a local transaction.</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -1177,7 +1228,7 @@ public class DecoderConfiguration extends DecoderRegistry { <b class="conum">(1)
 </div>
 </div>
 <div class="sect2">
-<h3 id="_commands_consumption">Commands consumption .</h3>
+<h3 id="_commands_consumption">Commands consumption</h3>
 <div class="paragraph">
 <p>In the end, the command becomes visible and ready to be consumed by all the workers of your BFM who are subscribed to the BoxArrivedEvent event</p>
 </div>
@@ -1217,13 +1268,247 @@ public class DecoderConfiguration extends DecoderRegistry { <b class="conum">(1)
 <div class="sect1">
 <h2 id="_enlist_a_local_transaction_worker">Enlist a Local Transaction Worker</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>the creation and the enrollment of a local transaction is very similar to a global transaction, indeed to create a local transaction it is enough just to extend the class <strong> LocalTransactionWorker </strong> and to annotate it with @component so that it is supported by kermoss, we can take as an example the ChefCookingServiceWorker.java class in the pizzashop microservice.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">package io.kermoss.saga.pizzashop.worker;
 
+@Component
+public class ChefCookingServiceWorker
+		extends LocalTransactionWorker&lt;OrderPizzaPendingEvent, OrderPizzaCookedEvent, ErrorLocalOccured&gt; {
+
+	@Autowired
+	PizzaService pizzaService;
+
+	public ChefCookingServiceWorker() {
+		super(new WorkerMeta("MakingPizza", "OrderPizzaService"));<b class="conum">(1)</b>
+	}
+
+	@Override
+	@BusinessLocalTransactional <b class="conum">(2)</b>
+	public LocalTransactionStepDefinition onStart(OrderPizzaPendingEvent orderPizzaPendingEvent) { <b class="conum">(3)</b>
+		return LocalTransactionStepDefinition.builder().in(orderPizzaPendingEvent)<b class="conum">(4)</b>
+				.blow(Stream.of(new BakingPizzaPendingEvent(orderPizzaPendingEvent.getCartID()))).meta(this.meta) <b class="conum">(5)</b>
+				.build();
+	}
+
+	@Override
+	@SwitchBusinessLocalTransactional <b class="conum">(6)</b>
+	public LocalTransactionStepDefinition onNext(OrderPizzaCookedEvent orderPizzaCookedEvent) {
+
+		OrderPizzaReadyForShipmentCommand cmd = null;
+		if (pizzaService != null) {
+
+			ToDilever b = new ToDilever("Some address", pizzaService.getOrders().get(orderPizzaCookedEvent.getCartId())
+					.getPizzas().stream().map(Pizza::getName).collect(Collectors.toList()));
+			cmd = new OrderPizzaReadyForShipmentCommand("deliver-pizza", "", b, "shippement-service");
+		}
+		return LocalTransactionStepDefinition.builder().in(orderPizzaCookedEvent)
+				.blow(Stream.of(new OrderPizzaReadyEvent(orderPizzaCookedEvent.getCartId()))).<b class="conum">(7)</b>
+				send(Stream.of(cmd)) <b class="conum">(8)</b>
+				.meta(this.meta).build();
+	}
+
+	@Override
+	@RollBackBusinessLocalTransactional <b class="conum">(9)</b>
+	public LocalTransactionStepDefinition onError(ErrorLocalOccured errorLocalOccured) { <b class="conum">(10)</b>
+		return LocalTransactionStepDefinition.builder().in(errorLocalOccured).meta(this.meta).build();
+	}
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>worker Meta data, contains the unique name <strong>MakingPizza</strong> of the local Transaction, it allows to identify it, also it allows to register it in the global transaction "OrderPizzaService"</p>
+</li>
+<li>
+<p>Transaction demarcation: start a new local transaction by listening to an event</p>
+</li>
+<li>
+<p>listen on an event of type OrderPizzaPendingEvent</p>
+</li>
+<li>
+<p>allow the Local Transaction StepDefinition to consume the event</p>
+</li>
+<li>
+<p>pass the meta data reference to the local Transaction StepDefinition</p>
+</li>
+<li>
+<p>transaction demarcation: Commit and close Local Transaction by listening to an event</p>
+</li>
+<li>
+<p>trigger an event stream</p>
+</li>
+<li>
+<p>send a command stream</p>
+</li>
+<li>
+<p>transaction demarcation: rollBack a Business LocalTransaction by listening to an event of type ErrorLocalOccured</p>
+</li>
+<li>
+<p>listen on an event of type ErrorLocalOccured</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>a local transaction can monitor one or more local transactions</p>
+</li>
+<li>
+<p>a local transaction can only be registered to a single local transaction or global transaction through the metaWorker</p>
+</li>
+<li>
+<p>a local transaction cannot be committed, only if all of its children are committed</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_compensating_transaction_rollback">Compensating transaction (rollback)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>the rollback phase of a business transaction begins when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>if one of the BFM workers fire an exception.</p>
+</li>
+<li>
+<p>one or more workers define a rollback policy by catching this exception:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>a rollback policy consists of mapping this exception to an event.</p>
+</li>
+<li>
+<p>a rollback policy can define a global or local compensation scope</p>
+</li>
+<li>
+<p>if the scope of compensation is global, the Orchestrator (realm manager) of the global transaction sends a message to all members (ambassadors), to stop worker transactions and only accept compensation commands or execute methods annotated with @RollBackBusinessLocalTransactional</p>
+</li>
+<li>
+<p>if the scope of compensation is local, a global transaction may have another chance to recover.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Override
+	@BusinessLocalTransactional
+	public LocalTransactionStepDefinition onStart(DeliveryBillArrivedEvent deliveryBillArrivedEvent) {
+		return LocalTransactionStepDefinition.builder().in(deliveryBillArrivedEvent)
+				.blow(Stream.of(new DeliveryBillPayed())).receive(Bill.class, x -&gt; {  <b class="conum">(1)</b>
+					System.out.println(x.toString());
+					if (x.getPrice() &gt; 2) {
+                     throw new ExpensiveException("pizza is too much expensive");  <b class="conum">(2)</b>
+					}
+				})
+				 .compensateWhen(Propagation.GLOBAL,Stream.of(new PizzaRejectedEvent ()),DelayException.class, ExpensiveException.class) <b class="conum">(3)</b>
+				.receive(Bill.class, (x, y) -&gt; log.info("linking object {} with gtx {}", y, x)).meta(this.meta).build();
+
+	}
+
+	@Override
+	@RollBackBusinessLocalTransactional
+
+	public LocalTransactionStepDefinition onError(PizzaRejectedEvent pizzaRejectedEvent) { <b class="conum">(4)</b>
+		return LocalTransactionStepDefinition.builder().in(pizzaRejectedEvent).meta(this.meta).build();
+	}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>receives a command of type Bill.java</p>
+</li>
+<li>
+<p>under certain conditions you can raise an exception</p>
+</li>
+<li>
+<p>defines rollback policy which consists of mapping one or more exceptions to an event stream and indicating the scope of propagation.</p>
+</li>
+<li>
+<p>start a rollback pipeline by listening on the PizzaRejectedEvent</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Not all exceptions raised within your application are captured by kermoss to start a rollback (compensating a business transaction).</p>
+</li>
+<li>
+<p>it must be triggered from a pipeline <strong> LocalTransactionStepDefinition </strong> or <strong> GlobalTransactionStepDefinition </strong></p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="ulist">
+<div class="title">Best practice</div>
+<ul>
+<li>
+<p>always remember to create a service that you can inject into your BFM worker (Global or local), then call the method of this service containing the logic that raises an exception from the pipeline operators <strong> LocalTransactionStepDefinition </strong> or <strong> GlobalTransactionStepDefinition </strong></p>
+</li>
+<li>
+<p>in general the two operators recieve and process are sufficient to wrap the logic of an exception</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-23 00:35:21 +0100
+Last updated 2021-03-23 22:25:11 +0100
 </div>
 </div>
 </body>
