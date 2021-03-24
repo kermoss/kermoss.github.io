@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Architecture Overview</title>
+<meta name="author" content="== Advanced configuration">
+<title>Kermoss configuration</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,138 +437,21 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body id="archi-doc" class="article">
+<body class="article">
 <div id="header">
-<h1>Architecture Overview</h1>
+<h1>Kermoss configuration</h1>
+<div class="details">
+<span id="author" class="author">== Advanced configuration</span><br>
+<span id="revdate">= Scheduler engine</span>
+</div>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_problem">Problem</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To improve performance and consistency in a distributed environment, an application shouldn&#8217;t go for ways such as two-phase commit or you&#8217;ll find your self in a situation similar to the two generals problem, instead the application should strive for eventual consistency. in such a model a transactional operation is devided into multiple steps. during the execution.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_saga_compensating_transaction_pattern">SAGA / Compensating Transaction pattern</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Kermoss Implements each business transaction(Global Business Transaction) which is split into smaller steps(Local Transaction) as a saga, which is a sequence of local transactions. each local transaction updates the database and publishs a message or an event to trigger the next local transaction. if a local transaction fails it will trigger a business rule called (Rollback policy), the saga will then execute a series of compensating transactions that cancels the changes made by the local transactions</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_let_it_crash_pattern">Let it crash pattern</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Kermoss was designed to adhere the Let it crash pattern, all communications between components, layers follow this pattern, this is where Kermoss gets its reliability characterestic</p>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-<div class="ulist">
-<div class="title">Pattern rules:</div>
-<ul>
-<li>
-<p>Messages are first class citizens was rediscovered by CQRS/ES</p>
-</li>
-<li>
-<p>Each component should tolerate a crash or a restart at anytime</p>
-</li>
-<li>
-<p>All interactions with the other components should tolerate that the peers could crash.</p>
-</li>
-<li>
-<p>Each component should be encapsulated in a way that the crashs wouldn&#8217;t affect it</p>
-</li>
-<li>
-<p>All requests sent to component should be self describing, in way that would allow the processing to be restarted</p>
-</li>
-</ul>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_solution_kermoss_framework">Solution: Kermoss Framework</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Kermoss was designed to serve a network of federated BFM nodes [Terminologies](# terminologies) and inter-connected via distributed command orchestrators (realm-ambassadors), communication between nodes is driven primarily by messages (messages-driven).</p>
-</div>
-<div class="paragraph">
-<p>The (realm orchestrator) is the initiator of "global business transaction: GTX", an orchestrator of the federated network becomes ambassador after receiving a "Tag" containing GTX and can start by delegation a local transaction ( foreign local transaction: FLTX) in another BFM context, however the (realm orchestrator) is the only one responsible for rollback a (LTX: local transaction / NTLX (nested local transaction) and FLTX: foreign local transaction) via "rollback policies".</p>
-</div>
-<div class="sect2">
-<h3 id="_kermoss_toolbox">Kermoss ToolBox</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>Saga of transactions distributed via (realm-ambassador) pattern</p>
-</li>
-<li>
-<p>Idempotence out of box at all levels, out of the box</p>
-</li>
-<li>
-<p>Very advanced auditabilty: Debugging and monitoring of the entire value chain managed by Kermoss</p>
-</li>
-<li>
-<p>Reliability is the core principle of Kermoss and the dimension that gave it more chance to exist</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_terminologies">Terminologies</h3>
-<div class="ulist">
-<ul>
-<li>
-<p>BFM (Business Flow Model): Business Unit Worker; each BUW manages the life cycle of a local transactions</p>
-</li>
-<li>
-<p>BTM (Business Transaction Manager): Component managing the life cycle of the global business transaction as well as the local taransactions</p>
-</li>
-<li>
-<p>C.O (Command Orchestrator): Manages the life cycle of commands sent by an internal or external BFM</p>
-</li>
-<li>
-<p>C.S (Command Scheduler): Manages the life cycle of the commands sent by the BFM</p>
-</li>
-<li>
-<p>T.S (Transport Service): Defines routing &amp; mediation rules</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_kermoss_architecture_big_picture">Kermoss Architecture Big Picture</h3>
-<div class="imageblock">
-<div class="content">
-<img src="./images/kermoss-archi.svg" alt="kermoss archi">
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_kermoss_respect_hexagonal_architecture">Kermoss respect hexagonal architecture</h3>
-<div class="imageblock">
-<div class="content">
-<img src="./images/commands.saga.dio-Archi-Hexa.svg" alt="commands.saga.dio Archi Hexa">
-</div>
-</div>
-</div>
-</div>
-</div>
+<h1 id="_auditability" class="sect0">Auditability</h1>
+
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-24 00:15:21 +0100
+Last updated 2021-03-23 23:01:26 +0100
 </div>
 </div>
 </body>

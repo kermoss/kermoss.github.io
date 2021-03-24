@@ -1392,10 +1392,10 @@ public class ChefCookingServiceWorker
 <div class="ulist">
 <ul>
 <li>
-<p>if one of the BFM workers fire an exception.</p>
+<p>if one of the BFM workers fire an exception using its local or global pipeline builder (LocalTransactionStepDefinition or GlobalTransactionStepDefinition).</p>
 </li>
 <li>
-<p>one or more workers define a rollback policy by catching this exception:</p>
+<p>the worker defines <strong> in the same pipeline builder </strong> a rollback policy by catching this exception:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -1405,7 +1405,7 @@ public class ChefCookingServiceWorker
 <p>a rollback policy can define a global or local compensation scope</p>
 </li>
 <li>
-<p>if the scope of compensation is global, the Orchestrator (realm manager) of the global transaction sends a message to all members (ambassadors), to stop worker transactions and only accept compensation commands or execute methods annotated with @RollBackBusinessLocalTransactional</p>
+<p>if the scope of compensation is global, the Orchestrator (realm manager) of the global transaction sends a message to all members (ambassadors), to suspend all transactions (global or local) and prepare them for a possible rollback . in this case The BFM (business flow model) instances accept only a commands dedicated for compensation or execute methods annotated with @RollBackBusinessLocalTransactional</p>
 </li>
 <li>
 <p>if the scope of compensation is local, a global transaction may have another chance to recover.</p>
@@ -1473,7 +1473,7 @@ public class ChefCookingServiceWorker
 <p>Not all exceptions raised within your application are captured by kermoss to start a rollback (compensating a business transaction).</p>
 </li>
 <li>
-<p>it must be triggered from a pipeline <strong> LocalTransactionStepDefinition </strong> or <strong> GlobalTransactionStepDefinition </strong></p>
+<p>an exception should be triggered and captured by the same pipeline builder <strong> LocalTransactionStepDefinition </strong> or <strong> GlobalTransactionStepDefinition </strong></p>
 </li>
 </ul>
 </div>
@@ -1505,10 +1505,16 @@ public class ChefCookingServiceWorker
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_synchronization">Synchronization</h2>
+<div class="sectionbody">
+
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-23 22:25:11 +0100
+Last updated 2021-03-25 00:32:26 +0100
 </div>
 </div>
 </body>

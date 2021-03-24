@@ -494,8 +494,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_enlist_a_local_transaction_worker">2.16. Enlist a Local Transaction Worker</a></li>
 <li><a href="#_compensating_transaction_rollback">2.17. Compensating transaction (rollback)</a></li>
+<li><a href="#_synchronization">2.18. Synchronization</a></li>
 </ul>
 </li>
+<li><a href="#_kermoss_configuration">3. Kermoss configuration</a>
+<ul class="sectlevel2">
+<li><a href="#_advanced_configuration">3.1. Advanced configuration</a></li>
+</ul>
+</li>
+<li><a href="#_scheduler_engine">4. Scheduler engine</a></li>
+<li><a href="#_auditability">5. Auditability</a></li>
 </ul>
 </div>
 </div>
@@ -1643,10 +1651,10 @@ to carry out this operation you should create a decoder service allowing to prod
 <div class="ulist">
 <ul>
 <li>
-<p>if one of the BFM workers fire an exception.</p>
+<p>if one of the BFM workers fire an exception using its local or global pipeline builder (LocalTransactionStepDefinition or GlobalTransactionStepDefinition).</p>
 </li>
 <li>
-<p>one or more workers define a rollback policy by catching this exception:</p>
+<p>the worker defines <strong> in the same pipeline builder </strong> a rollback policy by catching this exception:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -1656,7 +1664,7 @@ to carry out this operation you should create a decoder service allowing to prod
 <p>a rollback policy can define a global or local compensation scope</p>
 </li>
 <li>
-<p>if the scope of compensation is global, the Orchestrator (realm manager) of the global transaction sends a message to all members (ambassadors), to stop worker transactions and only accept compensation commands or execute methods annotated with @RollBackBusinessLocalTransactional</p>
+<p>if the scope of compensation is global, the Orchestrator (realm manager) of the global transaction sends a message to all members (ambassadors), to suspend all transactions (global or local) and prepare them for a possible rollback . in this case The BFM (business flow model) instances accept only a commands dedicated for compensation or execute methods annotated with @RollBackBusinessLocalTransactional</p>
 </li>
 <li>
 <p>if the scope of compensation is local, a global transaction may have another chance to recover.</p>
@@ -1728,7 +1736,7 @@ to carry out this operation you should create a decoder service allowing to prod
 <p>Not all exceptions raised within your application are captured by kermoss to start a rollback (compensating a business transaction).</p>
 </li>
 <li>
-<p>it must be triggered from a pipeline <strong> LocalTransactionStepDefinition </strong> or <strong> GlobalTransactionStepDefinition </strong></p>
+<p>an exception should be triggered and captured by the same pipeline builder <strong> LocalTransactionStepDefinition </strong> or <strong> GlobalTransactionStepDefinition </strong></p>
 </li>
 </ul>
 </div>
@@ -1759,12 +1767,37 @@ to carry out this operation you should create a decoder service allowing to prod
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_synchronization"><a class="anchor" href="#_synchronization"></a>2.18. Synchronization</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kermoss_configuration"><a class="anchor" href="#_kermoss_configuration"></a>3. Kermoss configuration</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_advanced_configuration"><a class="anchor" href="#_advanced_configuration"></a>3.1. Advanced configuration</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_scheduler_engine"><a class="anchor" href="#_scheduler_engine"></a>4. Scheduler engine</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_auditability"><a class="anchor" href="#_auditability"></a>5. Auditability</h2>
+<div class="sectionbody">
+
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-23 18:03:25 +0100
+Last updated 2021-03-23 22:59:44 +0100
 </div>
 </div>
 <style>
