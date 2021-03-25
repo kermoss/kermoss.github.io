@@ -1508,13 +1508,65 @@ public class ChefCookingServiceWorker
 <div class="sect1">
 <h2 id="_synchronization">Synchronization</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>As explained previously, kermoss always promotes communication between its components in asynchronous mode and driven by messages, however in certain situations, you will have to condition the progress of your transaction by the availability of one or more business services, for example in the case of pizzashop microservice could only start its global transaction if the market service is up &amp; running.</p>
+</div>
+<div class="paragraph">
+<p>To synchronize the progress of your global transaction with the availability of one or more business services, the pipeline builder GlobalTransactionStepDefinition offers the operator <strong> prepare </strong> to perform this feature.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Override
+    @BusinessGlobalTransactional
+    public GlobalTransactionStepDefinition onStart(OrderPizzaReceivedEvent orderPizzaReceivedEvent) {
+        Need need = new Need(Arrays.asList("Tomatos", "mozzarella cheese", "meat"));
+        CallMarketCommand cmd = new CallMarketCommand("call-market", "",
+                need, "market-service"); <b class="conum">(1)</b>
+       return GlobalTransactionStepDefinition.builder()
+                .in(orderPizzaReceivedEvent)
+                .meta(this.meta)
+                .process(Optional.empty())
+                .prepare(Stream.of(cmd)) <b class="conum">(2)</b>
+                .blow(Stream.of(new OrderPizzaPendingEvent(orderPizzaReceivedEvent.getCartId())))
+                .attach(gtx -&gt; System.out.println("Attaching external process with gtx : " + gtx + " to OrderPizzaStateWorker"))
+                .build();
+    }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>create a command that you want to send to the remote BFM of the microservice Market as part of the synchronization protocol</p>
+</li>
+<li>
+<p>call the operator <strong> prepare </strong> to complete the synchronization</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>When you perform a synchronization with another microservice, it also allows to create a new BFM instance (ambassador) in this micorservice</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-25 00:32:26 +0100
+Last updated 2021-03-25 15:54:12 +0100
 </div>
 </div>
 </body>

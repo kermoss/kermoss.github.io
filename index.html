@@ -1769,7 +1769,61 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 <div class="sect2">
 <h3 id="_synchronization"><a class="anchor" href="#_synchronization"></a>2.18. Synchronization</h3>
-
+<div class="paragraph">
+<p>As explained previously, kermoss always promotes communication between its components in asynchronous mode and driven by messages, however in certain situations, you will have to condition the progress of your transaction by the availability of one or more business services, for example in the case of pizzashop microservice could only start its global transaction if the market service is up &amp; running.</p>
+</div>
+<div class="paragraph">
+<p>To synchronize the progress of your global transaction with the availability of one or more business services, the pipeline builder GlobalTransactionStepDefinition offers the operator <strong> prepare </strong> to perform this feature.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Override</span>
+    <span class="nd">@BusinessGlobalTransactional</span>
+    <span class="kd">public</span> <span class="nc">GlobalTransactionStepDefinition</span> <span class="nf">onStart</span><span class="o">(</span><span class="nc">OrderPizzaReceivedEvent</span> <span class="n">orderPizzaReceivedEvent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Need</span> <span class="n">need</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Need</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"Tomatos"</span><span class="o">,</span> <span class="s">"mozzarella cheese"</span><span class="o">,</span> <span class="s">"meat"</span><span class="o">));</span>
+        <span class="nc">CallMarketCommand</span> <span class="n">cmd</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CallMarketCommand</span><span class="o">(</span><span class="s">"call-market"</span><span class="o">,</span> <span class="s">""</span><span class="o">,</span>
+                <span class="n">need</span><span class="o">,</span> <span class="s">"market-service"</span><span class="o">);</span> <i class="conum" data-value="1"></i><b>(1)</b>
+       <span class="k">return</span> <span class="nc">GlobalTransactionStepDefinition</span><span class="o">.</span><span class="na">builder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">in</span><span class="o">(</span><span class="n">orderPizzaReceivedEvent</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">meta</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">meta</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">process</span><span class="o">(</span><span class="nc">Optional</span><span class="o">.</span><span class="na">empty</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">prepare</span><span class="o">(</span><span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">cmd</span><span class="o">))</span> <i class="conum" data-value="2"></i><b>(2)</b>
+                <span class="o">.</span><span class="na">blow</span><span class="o">(</span><span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="k">new</span> <span class="nc">OrderPizzaPendingEvent</span><span class="o">(</span><span class="n">orderPizzaReceivedEvent</span><span class="o">.</span><span class="na">getCartId</span><span class="o">())))</span>
+                <span class="o">.</span><span class="na">attach</span><span class="o">(</span><span class="n">gtx</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Attaching external process with gtx : "</span> <span class="o">+</span> <span class="n">gtx</span> <span class="o">+</span> <span class="s">" to OrderPizzaStateWorker"</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>create a command that you want to send to the remote BFM of the microservice Market as part of the synchronization protocol</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>call the operator <strong> prepare </strong> to complete the synchronization</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>When you perform a synchronization with another microservice, it also allows to create a new BFM instance (ambassador) in this micorservice</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
