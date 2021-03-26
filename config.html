@@ -5,7 +5,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<meta name="author" content="== Advanced configuration">
 <title>Kermoss configuration</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -440,18 +439,61 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <body class="article">
 <div id="header">
 <h1>Kermoss configuration</h1>
-<div class="details">
-<span id="author" class="author">== Advanced configuration</span><br>
-<span id="revdate">= Scheduler engine</span>
-</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Almost like all frameworks, kermoss offers a variety of properties to facilitate the use of its configuration, you are free to configure kermoss either with a yaml file or properties, in addition all the list of properties exposed by kermoss are discoverable by using the auto-completion of your IDE (ex: Spring Tools 4 plugin)</p>
+</div>
+<div class="paragraph">
+<p>the kermoss configuration targets notably:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>importing schema to your database (see <a href="#_connect_kermoss_to_your_database">here</a>)</p>
+</li>
+<li>
+<p>The configuration of dataSource and TransactionManager (see <a href="#_datasource_plumbing">here</a>) normally kermoss should be auto-configured with your existing dataSource and TransactionManager of your application</p>
+</li>
+<li>
+<p>the layers of tansports; for the moment kermoss supports:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>HTTP via feign or restemplate from spring</p>
+</li>
+<li>
+<p>kafka if you have already put a (message broker) kafka</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>decoder services (see <a href="#_how_to_configure_the_decoder_service">here</a>).</p>
+</li>
+<li>
+<p>scheduling engine</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_advanced_configuration">Advanced configuration</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<h1 id="_scheduler_engine" class="sect0">Scheduler engine</h1>
+
 <h1 id="_auditability" class="sect0">Auditability</h1>
 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-23 23:01:26 +0100
+Last updated 2021-03-26 02:03:59 +0100
 </div>
 </div>
 </body>
