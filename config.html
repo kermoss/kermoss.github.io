@@ -444,7 +444,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Almost like all frameworks, kermoss offers a variety of properties to facilitate the use of its configuration, you are free to configure kermoss either with a yaml file or properties, in addition all the list of properties exposed by kermoss are discoverable by using the auto-completion of your IDE (ex: Spring Tools 4 plugin)</p>
+<p>Almost like all frameworks, kermoss offers a variety of properties to facilitate the use of its configuration, you are free to configure kermoss either with a yaml or properties file, in addition all the list of properties exposed by kermoss are discoverable by using the auto-completion of your IDE (ex: Spring Tools 4 plugin)</p>
 </div>
 <div class="paragraph">
 <p>the kermoss configuration targets notably:</p>
@@ -455,17 +455,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>importing schema to your database (see <a href="#_connect_kermoss_to_your_database">here</a>)</p>
 </li>
 <li>
-<p>The configuration of dataSource and TransactionManager (see <a href="#_datasource_plumbing">here</a>) normally kermoss should be auto-configured with your existing dataSource and TransactionManager of your application</p>
+<p>dataSource and TransactionManager (see <a href="#_datasource_plumbing">here</a>). Normally kermoss should be auto-configured seamlessly with your existing dataSource and TransactionManager of your application.</p>
 </li>
 <li>
-<p>the layers of tansports; for the moment kermoss supports:</p>
+<p>transport layers. For the moment kermoss supports:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>HTTP via feign or restemplate from spring</p>
+<p>HTTP via feign or restTemplate from spring</p>
 </li>
 <li>
-<p>kafka if you have already put a (message broker) kafka</p>
+<p>kafka if you have already put a (message broker kafka)</p>
 </li>
 </ul>
 </div>
@@ -481,19 +481,328 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
+<h2 id="_kafka_as_the_default_transport_layer">Kafka as the default transport Layer</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">kermoss:
+  service-name: pizza-shop
+  transport:
+    broker-mode:
+      prepared-request-use: http <b class="conum">(1)</b>
+    default-layer: kafka <b class="conum">(2)</b>
+    kafka:
+      consumer:
+         group-name: ${kermoss.service-name} <b class="conum">(3)</b>
+      bootstrap-address: 192.168.3.127:9092,192.168.3.128:9092,192.168.3.129:9092 <b class="conum">(4)</b>
+  sources: <b class="conum">(5)</b>
+      market-service: <b class="conum">(6)</b>
+          kafka: io.kermoss.topics.pizzashop.marketservice <b class="conum">(7)</b>
+      shippement-service:
+           kafka: io.kermoss.topics.pizzashop.shippementservice
+  sinks: <b class="conum">(8)</b>
+     pizza-shop:
+           kafka: io.kermoss.topics.pizzashop <b class="conum">(9)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>prepared-request-use: tell kermoss to use http or feign when synchronizing BFM instances,for more details about synchronization see <a href="#_synchronization">here</a>. This property is restricted when choosing kafka broker as transport layer</p>
+</li>
+<li>
+<p>default-layer: configured to route commands to recipients using kafka.</p>
+</li>
+<li>
+<p>group-name: the group name of kafka consumer, a consumer group is a set of consumers which cooperate to consume data from some topics, The Consumer Group name is global across a Kafka cluster.</p>
+</li>
+<li>
+<p>bootstrap-address is a comma-separated list of host and port pairs that are the addresses of the Kafka brokers</p>
+</li>
+<li>
+<p>sources: wraps a list of command destinations, and maps them to a target address</p>
+</li>
+<li>
+<p>the destination name of a command: used by kermoss to route a command to an address.</p>
+</li>
+<li>
+<p>the target address of the command, to should be preceded by the key <strong> kafka </strong>;</p>
+</li>
+<li>
+<p>sinks: wraps all the possible topics to consume, as a source of commands for your BFM</p>
+</li>
+<li>
+<p>the name of the topic to which the consumers' group subscribes, this topic name should be preceded by the key <strong> kafka </strong></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<div class="title">kermoss.sinks:</div>
+<p>this property is ignored when configuring default-layer property with feign or http</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_http_as_the_default_transport_layer">HTTP as the default transport Layer</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_feign_support">Feign support</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">kermoss:
+  service-name: pizza-shop
+  transport:
+    default-layer: feign <b class="conum">(1)</b>
+  sources: <b class="conum">(2)</b>
+      market-service: <b class="conum">(3)</b>
+          feign: market-service <b class="conum">(4)</b>
+      shippement-service:
+          feign: shippement-service
+      pizza-shop:
+           feign: pizza-shop</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>default-layer: configured to route commands to recipients using <strong>feign</strong></p>
+</li>
+<li>
+<p>sources: wraps a list of command destinations, and maps them to a target address</p>
+</li>
+<li>
+<p>the destination name of a command: used by kermoss to route a command to an address.</p>
+</li>
+<li>
+<p>the target address of the command, it should be preceded by the key <strong> feign </strong> and the value should match the service name of the microservice (pizza market) in your service registry (eurika, consul)</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_http_resttemplate_support">Http restTemplate support</h3>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">kermoss:
+  service-name: pizza-shop
+  transport:
+    default-layer: http <b class="conum">(1)</b>
+  sources: <b class="conum">(2)</b>
+      market-service:<b class="conum">(3)</b>
+          http: http://localhost:8081/command-executor/commands <b class="conum">(4)</b>
+      shippement-service:
+           http: http://localhost:8081/command-executor/commands
+      pizza-shop:
+           http: http://localhost:8081/command-executor/commands</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>default-layer: configured to route commands to recipients using <strong>http with restTemplate support</strong></p>
+</li>
+<li>
+<p>sources: wraps a list of command destinations, and maps them to a target address</p>
+</li>
+<li>
+<p>the destination name of a command: used by kermoss to route a command to an address.</p>
+</li>
+<li>
+<p>the target address of the command, it should be preceded by the key <strong> http </strong> ,all values ​​must respect the following convention: <strong>&lt;service address&gt;/command-executor/commands</strong></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_advanced_configuration">Advanced configuration</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>If you are not satisfied, or you find some limitation regarding the default implementation of the kemoss framework configuration according to your needs, you are free to reimplement some configuration that comes with kermoss including those of kafka (producer and consumer ) and the command routing strategy.</p>
+</div>
+<div class="sect2">
+<h3 id="_define_your_kafkaproducer">Define your KafkaProducer</h3>
+<div class="paragraph">
+<p>To reimplement the configuration of your kafkaTemplate you should at least write your configuration as follows:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Configuration
+public class CustomKafkaProducerConfig {
 
+	@Autowired
+	private KermossProperties kermossProperties; <b class="conum">(1)</b>
+
+
+
+    public ProducerFactory&lt;String, TransporterCommand&gt; producerFactory() {
+    	String bootstrapAddress = kermossProperties.getTransport().getKafka().getBootstrapAddress(); <b class="conum">(2)</b>
+
+		if(bootstrapAddress==null) {
+			throw new IllegalArgumentException("Kermoss: Kafka bootstrapAddress property is not specified");
+		}
+    	Map&lt;String, Object&gt; configProps = new HashMap&lt;&gt;();
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        ... <b class="conum">(3)</b>
+        return new DefaultKafkaProducerFactory&lt;&gt;(configProps);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name="kermoss.transport.default-layer",havingValue="kafka")
+    public KafkaTemplate&lt;String, TransporterCommand&gt; kafkaTemplate() {
+        ... <b class="conum">(4)</b>
+        return new KafkaTemplate&lt;&gt;(producerFactory());
+    }
+
+}</code></pre>
 </div>
 </div>
-<h1 id="_scheduler_engine" class="sect0">Scheduler engine</h1>
+<div class="colist arabic">
+<ol>
+<li>
+<p>inject KermossProperties to access the different properties exposed by kermoss.</p>
+</li>
+<li>
+<p>access the kafka configuration</p>
+</li>
+<li>
+<p>Here you configure the properties of your producerFactory</p>
+</li>
+<li>
+<p>here you configure your KafkaTemplate according to your needs.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_define_your_kafkalistener_container_factory">Define your KafkaListener container factory</h3>
+<div class="paragraph">
+<p>To reimplement the configuration of your <strong> ConcurrentKafkaListenerContainerFactory </strong> you should at least write your configuration as follows:</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@EnableKafka <b class="conum">(1)</b>
+@Configuration
+public class CustomKafkaConsumerConfig {
 
-<h1 id="_auditability" class="sect0">Auditability</h1>
+	@Autowired
+	private KermossProperties kermossProperties; <b class="conum">(2)</b>
 
+	public ConsumerFactory&lt;String,TransporterCommand&gt; consumerFactory() {
+		String bootstrapAddress = kermossProperties.getTransport().getKafka().getBootstrapAddress();<b class="conum">(3)</b>
+		String groupName = kermossProperties.getTransport().getKafka().getConsumer().getGroupName();
+		 ...<b class="conum">(4)</b>
+        return new DefaultKafkaConsumerFactory&lt;&gt;(props, new StringDeserializer(), new JsonDeserializer&lt;&gt;(TransporterCommand.class));
+    }
+
+	@Bean
+    @ConditionalOnProperty(name="kermoss.transport.default-layer",havingValue="kafka")
+    public ConcurrentKafkaListenerContainerFactory&lt;String, TransporterCommand&gt; kafkaManualAckListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory&lt;String, TransporterCommand&gt; factory = new ConcurrentKafkaListenerContainerFactory&lt;&gt;();
+        ContainerProperties props = factory.getContainerProperties();
+        ... <b class="conum">(5)</b>
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>enable Kafka listener annotated endpoints.</p>
+</li>
+<li>
+<p>inject KermossProperties to access the different properties exposed by kermoss</p>
+</li>
+<li>
+<p>access the kafka configuration</p>
+</li>
+<li>
+<p>here you configure the properties of your <strong> ConsumerFactory </strong></p>
+</li>
+<li>
+<p>here you configure your <strong>ConcurrentKafkaListenerContainerFactory</strong> according to your needs.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_suitable_strategy_for_transporting_your_commands">Suitable strategy for transporting your commands</h3>
+<div class="paragraph">
+<p>To reimplement the transport strategies of your commands, you should reimplement the configuration method <strong> "CommandTransporterStrategy strategy" </strong> with @Bean annotation, then redefine your strategy by implementing the following interface CommandTransporterStrategy</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Bean
+public CommandTransporterStrategy strategy(KafkaTemplate&lt;String, TransporterCommand&gt; kafkaTemplate,
+			RestTemplate restTemplate, final KermossProperties kermossProperties, final Client client) {
+
+		Layer layer = kermossProperties.getTransport().getDefaultLayer();
+
+		CommandTransporterStrategy commandTransporterStrategy;
+
+		switch (layer) {
+		case HTTP:
+			commandTransporterStrategy = new RestCommandTransporterStrategy(restTemplate, kermossProperties);
+			break;
+		case FEIGN:
+			commandTransporterStrategy = new FeignCommandTransporterStrategy(client,kermossProperties,
+					FeignCommandTransporterStrategy::defaultClientFactory);
+			break;
+		default:
+			commandTransporterStrategy = new KafkaCommandTransporterStrategy(kafkaTemplate, kermossProperties);
+			break;
+		}
+
+		return commandTransporterStrategy;
+	}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-26 02:03:59 +0100
+Last updated 2021-03-26 22:27:31 +0100
 </div>
 </div>
 </body>
