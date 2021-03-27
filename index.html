@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
 <meta name="author" content="S.Raja, M.Aboullaite, M.Lahlou, K.omary, R.Mekrami">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <title>Kermoss Reference Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -1705,7 +1706,10 @@ to carry out this operation you should create a decoder service allowing to prod
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Override</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Autowired</span>
+	<span class="nc">PizzaService</span> <span class="n">pizzaService</span><span class="o">;</span>
+
+<span class="nd">@Override</span>
 	<span class="nd">@BusinessLocalTransactional</span>
 	<span class="kd">public</span> <span class="nc">LocalTransactionStepDefinition</span> <span class="nf">onStart</span><span class="o">(</span><span class="nc">DeliveryBillArrivedEvent</span> <span class="n">deliveryBillArrivedEvent</span><span class="o">)</span> <span class="o">{</span>
 		<span class="k">return</span> <span class="nc">LocalTransactionStepDefinition</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">in</span><span class="o">(</span><span class="n">deliveryBillArrivedEvent</span><span class="o">)</span>
@@ -1722,7 +1726,6 @@ to carry out this operation you should create a decoder service allowing to prod
 
 	<span class="nd">@Override</span>
 	<span class="nd">@RollBackBusinessLocalTransactional</span>
-
 	<span class="kd">public</span> <span class="nc">LocalTransactionStepDefinition</span> <span class="nf">onError</span><span class="o">(</span><span class="nc">PizzaRejectedEvent</span> <span class="n">pizzaRejectedEvent</span><span class="o">)</span> <span class="o">{</span> <i class="conum" data-value="4"></i><b>(4)</b>
 		<span class="k">return</span> <span class="nc">LocalTransactionStepDefinition</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">in</span><span class="o">(</span><span class="n">pizzaRejectedEvent</span><span class="o">).</span><span class="na">meta</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">meta</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
 	<span class="o">}</span></code></pre>
@@ -2236,7 +2239,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-26 23:34:02 +0100
+Last updated 2021-03-27 22:15:15 +0100
 </div>
 </div>
 <style>

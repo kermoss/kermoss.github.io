@@ -1422,7 +1422,10 @@ public class ChefCookingServiceWorker
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">@Override
+<pre class="highlight"><code class="language-java" data-lang="java">@Autowired
+	PizzaService pizzaService;
+
+@Override
 	@BusinessLocalTransactional
 	public LocalTransactionStepDefinition onStart(DeliveryBillArrivedEvent deliveryBillArrivedEvent) {
 		return LocalTransactionStepDefinition.builder().in(deliveryBillArrivedEvent)
@@ -1439,7 +1442,6 @@ public class ChefCookingServiceWorker
 
 	@Override
 	@RollBackBusinessLocalTransactional
-
 	public LocalTransactionStepDefinition onError(PizzaRejectedEvent pizzaRejectedEvent) { <b class="conum">(4)</b>
 		return LocalTransactionStepDefinition.builder().in(pizzaRejectedEvent).meta(this.meta).build();
 	}</code></pre>
@@ -1569,7 +1571,7 @@ public class ChefCookingServiceWorker
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-25 23:24:14 +0100
+Last updated 2021-03-27 21:59:15 +0100
 </div>
 </div>
 </body>
