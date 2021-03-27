@@ -533,6 +533,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Welcome to the Kermoss Framework documentation site! Here you can find the reference materials, guides, and examples to write and deploy your BFM (business Flow model) using kermoss , You do not need to read this guide in a linear fashion. Each piece stands on its own, though they often refer to other pieces.</p>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="archi-doc"><a class="anchor" href="#archi-doc"></a>1. Architecture Overview</h2>
 <div class="sectionbody">
@@ -588,7 +595,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="_solution_kermoss_framework"><a class="anchor" href="#_solution_kermoss_framework"></a>1.4. Solution: Kermoss Framework</h3>
 <div class="paragraph">
-<p>Kermoss was designed to serve a network of federated BFM nodes [Terminologies](# terminologies) and inter-connected via distributed command orchestrators (realm-ambassadors), communication between nodes is driven primarily by messages (messages-driven).</p>
+<p>Kermoss was designed to serve a network of federated <a href="#_terminologies">BFM</a> nodes, and inter-connected via distributed command orchestrators (realm-ambassadors), communication between nodes is driven primarily by messages (messages-driven).</p>
 </div>
 <div class="paragraph">
 <p>The (realm orchestrator) is the initiator of "global business transaction: GTX", an orchestrator of the federated network becomes ambassador after receiving a "Tag" containing GTX and can start by delegation a local transaction ( foreign local transaction: FLTX) in another BFM context, however the (realm orchestrator) is the only one responsible for rollback a (LTX: local transaction / NTLX (nested local transaction) and FLTX: foreign local transaction) via "rollback policies".</p>
