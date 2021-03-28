@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<meta name="author" content="S.Raja, M.Aboullaite, M.Lahlou, K.omary, R.Mekrami">
+<meta name="author" content="Soufiane Raja, Mohammed Aboullaite, Mehdi Lahlou, Khalil Omary, Reda Mekrami, Amine Hakou">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <title>Kermoss Reference Guide</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -452,79 +452,80 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1><span class="image related thumb"><img src="./images/kermoss-picto.png" alt="kermoss picto" width="50"></span> Kermoss Reference Guide</h1>
 <div class="details">
-<span id="author" class="author">S.Raja</span><br>
-<span id="author2" class="author">M.Aboullaite</span><br>
-<span id="author3" class="author">M.Lahlou</span><br>
-<span id="author4" class="author">K.omary</span><br>
-<span id="author5" class="author">R.Mekrami</span><br>
+<span id="author" class="author">Soufiane Raja</span><br>
+<span id="author2" class="author">Mohammed Aboullaite</span><br>
+<span id="author3" class="author">Mehdi Lahlou</span><br>
+<span id="author4" class="author">Khalil Omary</span><br>
+<span id="author5" class="author">Reda Mekrami, Amine Hakou</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#archi-doc">1. Architecture Overview</a>
+<li><a href="#_about_the_framework">1. About the Framework</a></li>
+<li><a href="#archi-doc">2. Architecture Overview</a>
 <ul class="sectlevel2">
-<li><a href="#_problem">1.1. Problem</a></li>
-<li><a href="#_saga_compensating_transaction_pattern">1.2. SAGA / Compensating Transaction pattern</a></li>
-<li><a href="#_let_it_crash_pattern">1.3. Let it crash pattern</a></li>
-<li><a href="#_solution_kermoss_framework">1.4. Solution: Kermoss Framework</a>
+<li><a href="#_problem">2.1. Problem</a></li>
+<li><a href="#_saga_compensating_transaction_pattern">2.2. SAGA / Compensating Transaction pattern</a></li>
+<li><a href="#_let_it_crash_pattern">2.3. Let it crash pattern</a></li>
+<li><a href="#_solution_kermoss_framework">2.4. Solution: Kermoss Framework</a>
 <ul class="sectlevel3">
-<li><a href="#_kermoss_toolbox">1.4.1. Kermoss ToolBox</a></li>
-<li><a href="#_terminologies">1.4.2. Terminologies</a></li>
-<li><a href="#_kermoss_architecture_big_picture">1.4.3. Kermoss Architecture Big Picture</a></li>
-<li><a href="#_kermoss_respect_hexagonal_architecture">1.4.4. Kermoss respect hexagonal architecture</a></li>
+<li><a href="#_kermoss_toolbox">2.4.1. Kermoss ToolBox</a></li>
+<li><a href="#_terminologies">2.4.2. Terminologies</a></li>
+<li><a href="#_kermoss_architecture_big_picture">2.4.3. Kermoss Architecture Big Picture</a></li>
+<li><a href="#_kermoss_respect_hexagonal_architecture">2.4.4. Kermoss respect hexagonal architecture</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#_getting_started">2. Getting Started</a>
+<li><a href="#_getting_started">3. Getting Started</a>
 <ul class="sectlevel2">
-<li><a href="#_prerequisites">2.1. Prerequisites</a></li>
-<li><a href="#_getting_kermoss">2.2. Getting Kermoss</a></li>
-<li><a href="#_connect_kermoss_to_your_database">2.3. Connect kermoss to your database</a>
+<li><a href="#_prerequisites">3.1. Prerequisites</a></li>
+<li><a href="#_getting_kermoss">3.2. Getting Kermoss</a></li>
+<li><a href="#_connect_kermoss_to_your_database">3.3. Connect kermoss to your database</a>
 <ul class="sectlevel3">
-<li><a href="#_datasource_plumbing">2.3.1. DataSource plumbing</a></li>
+<li><a href="#_datasource_plumbing">3.3.1. DataSource plumbing</a></li>
 </ul>
 </li>
-<li><a href="#_basic_configuration_concepts">2.4. Basic configuration concepts</a></li>
-<li><a href="#_first_steps_to_master_kermoss">2.5. First steps to master Kermoss</a></li>
-<li><a href="#_how_to_run_pizza_shop_microservices">2.6. How to run pizza shop microservices</a></li>
-<li><a href="#_how_to_run_pizza_shop_as_single_monolith_application">2.7. How to run pizza shop as single monolith application</a></li>
-<li><a href="#_bfm_pizzashop_together">2.8. BFM &amp; pizzashop together 🙏</a></li>
-<li><a href="#_kermoss_project_organization">2.9. Kermoss : project organization</a></li>
-<li><a href="#_create_your_first_globaltransaction_worker">2.10. Create your first globalTransaction worker</a></li>
-<li><a href="#_begin_a_new_global_transaction">2.11. Begin a new Global transaction</a></li>
-<li><a href="#_bind_a_global_transaction_context">2.12. Bind a global transaction context</a></li>
-<li><a href="#_call_your_bfm_workers_from_outside">2.13. Call your BFM workers from outside</a></li>
-<li><a href="#_send_a_command_to_a_remote_bfm">2.14. Send a command To a remote BFM</a>
+<li><a href="#_basic_configuration_concepts">3.4. Basic configuration concepts</a></li>
+<li><a href="#_first_steps_to_master_kermoss">3.5. First steps to master Kermoss</a></li>
+<li><a href="#_how_to_run_pizza_shop_microservices">3.6. How to run pizza shop microservices</a></li>
+<li><a href="#_how_to_run_pizza_shop_as_single_monolith_application">3.7. How to run pizza shop as single monolith application</a></li>
+<li><a href="#_bfm_pizzashop_together">3.8. BFM &amp; pizzashop together 🙏</a></li>
+<li><a href="#_kermoss_project_organization">3.9. Kermoss : project organization</a></li>
+<li><a href="#_create_your_first_globaltransaction_worker">3.10. Create your first globalTransaction worker</a></li>
+<li><a href="#_begin_a_new_global_transaction">3.11. Begin a new Global transaction</a></li>
+<li><a href="#_bind_a_global_transaction_context">3.12. Bind a global transaction context</a></li>
+<li><a href="#_call_your_bfm_workers_from_outside">3.13. Call your BFM workers from outside</a></li>
+<li><a href="#_send_a_command_to_a_remote_bfm">3.14. Send a command To a remote BFM</a>
 <ul class="sectlevel3">
-<li><a href="#_map_a_commands_subject_with_a_target_address">2.14.1. Map a command&#8217;s subject with a target address</a></li>
+<li><a href="#_map_a_commands_subject_with_a_target_address">3.14.1. Map a command&#8217;s subject with a target address</a></li>
 </ul>
 </li>
-<li><a href="#_receive_a_command_from_a_remote_bfm">2.15. Receive a command from a remote BFM</a>
+<li><a href="#_receive_a_command_from_a_remote_bfm">3.15. Receive a command from a remote BFM</a>
 <ul class="sectlevel3">
-<li><a href="#_how_to_configure_the_decoder_service">2.15.1. How to configure the decoder service</a></li>
-<li><a href="#_commands_consumption">2.15.2. Commands consumption</a></li>
+<li><a href="#_how_to_configure_the_decoder_service">3.15.1. How to configure the decoder service</a></li>
+<li><a href="#_commands_consumption">3.15.2. Commands consumption</a></li>
 </ul>
 </li>
-<li><a href="#_enlist_a_local_transaction_worker">2.16. Enlist a Local Transaction Worker</a></li>
-<li><a href="#_compensating_transaction_rollback">2.17. Compensating transaction (rollback)</a></li>
-<li><a href="#_synchronization">2.18. Synchronization</a></li>
+<li><a href="#_enlist_a_local_transaction_worker">3.16. Enlist a Local Transaction Worker</a></li>
+<li><a href="#_compensating_transaction_rollback">3.17. Compensating transaction (rollback)</a></li>
+<li><a href="#_synchronization">3.18. Synchronization</a></li>
 </ul>
 </li>
-<li><a href="#_kermoss_configuration">3. Kermoss configuration</a>
+<li><a href="#_kermoss_configuration">4. Kermoss configuration</a>
 <ul class="sectlevel2">
-<li><a href="#_kafka_as_the_default_transport_layer">3.1. Kafka as the default transport Layer</a></li>
-<li><a href="#_http_as_the_default_transport_layer">3.2. HTTP as the default transport Layer</a>
+<li><a href="#_kafka_as_the_default_transport_layer">4.1. Kafka as the default transport Layer</a></li>
+<li><a href="#_http_as_the_default_transport_layer">4.2. HTTP as the default transport Layer</a>
 <ul class="sectlevel3">
-<li><a href="#_feign_support">3.2.1. Feign support</a></li>
-<li><a href="#_http_resttemplate_support">3.2.2. Http restTemplate support</a></li>
+<li><a href="#_feign_support">4.2.1. Feign support</a></li>
+<li><a href="#_http_resttemplate_support">4.2.2. Http restTemplate support</a></li>
 </ul>
 </li>
-<li><a href="#_advanced_configuration">3.3. Advanced configuration</a>
+<li><a href="#_advanced_configuration">4.3. Advanced configuration</a>
 <ul class="sectlevel3">
-<li><a href="#_define_your_kafkaproducer">3.3.1. Define your KafkaProducer</a></li>
-<li><a href="#_define_your_kafkalistener_container_factory">3.3.2. Define your KafkaListener container factory</a></li>
-<li><a href="#_suitable_strategy_for_transporting_your_commands">3.3.3. Suitable strategy for transporting your commands</a></li>
+<li><a href="#_define_your_kafkaproducer">4.3.1. Define your KafkaProducer</a></li>
+<li><a href="#_define_your_kafkalistener_container_factory">4.3.2. Define your KafkaListener container factory</a></li>
+<li><a href="#_suitable_strategy_for_transporting_your_commands">4.3.3. Suitable strategy for transporting your commands</a></li>
 </ul>
 </li>
 </ul>
@@ -541,22 +542,39 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="archi-doc"><a class="anchor" href="#archi-doc"></a>1. Architecture Overview</h2>
+<h2 id="_about_the_framework"><a class="anchor" href="#_about_the_framework"></a>1. About the Framework</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>kermoss is a lightweight and a reactive business flow for modern applications and more precisely for applications with microservice architecture. kermoss aims to be as an open specification as well an implementaion for writing and deploying long running distributed business transaction  called BFM (businness flow model), currently kermoss is under active development and written only with java but soon we will try to port the specification of kermoss to the following languages: <strong> kotlin, ruby, javascript, go, php, &#8230;&#8203; </strong>.</p>
+</div>
+<div class="paragraph">
+<p>The concept of BFM is very similar to a BPM (business process management) except that the BFM are specified and developed for which it is completely reactive (responsive, elastic, resilient, message driven) for more details on the reactive architecture see the <a href="https://www.reactivemanifesto.org" target="_blank" rel="noopener">the reactive manifesto</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you are fun or your application follows the domain-driven design (DDD) approach, and you are looking for a framework to handle your Saga distributed transactions, then you are on the right track. kermoss aims to push your business transaction for whoever it is at the heart of your <a href="https://martinfowler.com/bliki/UbiquitousLanguage.html" target="_blank" rel="noopener">Ubiquitous Language</a>.</p>
+</div>
+<div class="paragraph">
+<p>Also software <a href="http://manifesto.softwarecraftsmanship.org" target="_blank" rel="noopener">craftsmanship</a> is one of his first concerns via the <strong> process as code </strong> paradigm, easily integrating into your code, the BFMs will be written, tested, secured and deployed with your possible means that you master ex : Kermoss does not require you to have kafka, or docker, or to be cloud native to be reactive. you can extend the capacity and the quality of your infrastructure as you go according to your budget and your know-how.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="archi-doc"><a class="anchor" href="#archi-doc"></a>2. Architecture Overview</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_problem"><a class="anchor" href="#_problem"></a>1.1. Problem</h3>
+<h3 id="_problem"><a class="anchor" href="#_problem"></a>2.1. Problem</h3>
 <div class="paragraph">
 <p>To improve performance and consistency in a distributed environment, an application shouldn&#8217;t go for ways such as two-phase commit or you&#8217;ll find your self in a situation similar to the two generals problem, instead the application should strive for eventual consistency. in such a model a transactional operation is devided into multiple steps. during the execution.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_saga_compensating_transaction_pattern"><a class="anchor" href="#_saga_compensating_transaction_pattern"></a>1.2. SAGA / Compensating Transaction pattern</h3>
+<h3 id="_saga_compensating_transaction_pattern"><a class="anchor" href="#_saga_compensating_transaction_pattern"></a>2.2. SAGA / Compensating Transaction pattern</h3>
 <div class="paragraph">
 <p>Kermoss Implements each business transaction(Global Business Transaction) which is split into smaller steps(Local Transaction) as a saga, which is a sequence of local transactions. each local transaction updates the database and publishs a message or an event to trigger the next local transaction. if a local transaction fails it will trigger a business rule called (Rollback policy), the saga will then execute a series of compensating transactions that cancels the changes made by the local transactions</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_let_it_crash_pattern"><a class="anchor" href="#_let_it_crash_pattern"></a>1.3. Let it crash pattern</h3>
+<h3 id="_let_it_crash_pattern"><a class="anchor" href="#_let_it_crash_pattern"></a>2.3. Let it crash pattern</h3>
 <div class="paragraph">
 <p>Kermoss was designed to adhere the Let it crash pattern, all communications between components, layers follow this pattern, this is where Kermoss gets its reliability characterestic</p>
 </div>
@@ -593,7 +611,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_solution_kermoss_framework"><a class="anchor" href="#_solution_kermoss_framework"></a>1.4. Solution: Kermoss Framework</h3>
+<h3 id="_solution_kermoss_framework"><a class="anchor" href="#_solution_kermoss_framework"></a>2.4. Solution: Kermoss Framework</h3>
 <div class="paragraph">
 <p>Kermoss was designed to serve a network of federated <a href="#_terminologies">BFM</a> nodes, and inter-connected via distributed command orchestrators (realm-ambassadors), communication between nodes is driven primarily by messages (messages-driven).</p>
 </div>
@@ -601,7 +619,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The (realm orchestrator) is the initiator of "global business transaction: GTX", an orchestrator of the federated network becomes ambassador after receiving a "Tag" containing GTX and can start by delegation a local transaction ( foreign local transaction: FLTX) in another BFM context, however the (realm orchestrator) is the only one responsible for rollback a (LTX: local transaction / NTLX (nested local transaction) and FLTX: foreign local transaction) via "rollback policies".</p>
 </div>
 <div class="sect3">
-<h4 id="_kermoss_toolbox"><a class="anchor" href="#_kermoss_toolbox"></a>1.4.1. Kermoss ToolBox</h4>
+<h4 id="_kermoss_toolbox"><a class="anchor" href="#_kermoss_toolbox"></a>2.4.1. Kermoss ToolBox</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -620,7 +638,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_terminologies"><a class="anchor" href="#_terminologies"></a>1.4.2. Terminologies</h4>
+<h4 id="_terminologies"><a class="anchor" href="#_terminologies"></a>2.4.2. Terminologies</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -642,7 +660,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_kermoss_architecture_big_picture"><a class="anchor" href="#_kermoss_architecture_big_picture"></a>1.4.3. Kermoss Architecture Big Picture</h4>
+<h4 id="_kermoss_architecture_big_picture"><a class="anchor" href="#_kermoss_architecture_big_picture"></a>2.4.3. Kermoss Architecture Big Picture</h4>
 <div class="imageblock">
 <div class="content">
 <img src="./images/kermoss-archi.svg" alt="kermoss archi">
@@ -650,7 +668,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_kermoss_respect_hexagonal_architecture"><a class="anchor" href="#_kermoss_respect_hexagonal_architecture"></a>1.4.4. Kermoss respect hexagonal architecture</h4>
+<h4 id="_kermoss_respect_hexagonal_architecture"><a class="anchor" href="#_kermoss_respect_hexagonal_architecture"></a>2.4.4. Kermoss respect hexagonal architecture</h4>
 <div class="imageblock">
 <div class="content">
 <img src="./images/commands.saga.dio-Archi-Hexa.svg" alt="commands.saga.dio Archi Hexa">
@@ -661,10 +679,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_getting_started"><a class="anchor" href="#_getting_started"></a>2. Getting Started</h2>
+<h2 id="_getting_started"><a class="anchor" href="#_getting_started"></a>3. Getting Started</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_prerequisites"><a class="anchor" href="#_prerequisites"></a>2.1. Prerequisites</h3>
+<h3 id="_prerequisites"><a class="anchor" href="#_prerequisites"></a>3.1. Prerequisites</h3>
 <div class="paragraph">
 <p>Kermoss Framework runs on Java 8 and above, and also uses the following direct dependencies:</p>
 </div>
@@ -689,7 +707,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getting_kermoss"><a class="anchor" href="#_getting_kermoss"></a>2.2. Getting Kermoss</h3>
+<h3 id="_getting_kermoss"><a class="anchor" href="#_getting_kermoss"></a>3.2. Getting Kermoss</h3>
 <div class="paragraph">
 <p>To be able to use kermoss in your project, add the following dependency in your pom.xml</p>
 </div>
@@ -708,7 +726,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_connect_kermoss_to_your_database"><a class="anchor" href="#_connect_kermoss_to_your_database"></a>2.3. Connect kermoss to your database</h3>
+<h3 id="_connect_kermoss_to_your_database"><a class="anchor" href="#_connect_kermoss_to_your_database"></a>3.3. Connect kermoss to your database</h3>
 <div class="paragraph">
 <p>Kermoss uses <strong> Liquibase </strong> (an open source database change management tool) to manage the versioning of its database schema, if you already have liquibase in your project, you just have to add only this line to your db.changelog-master.xml file</p>
 </div>
@@ -775,7 +793,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_datasource_plumbing"><a class="anchor" href="#_datasource_plumbing"></a>2.3.1. DataSource plumbing</h4>
+<h4 id="_datasource_plumbing"><a class="anchor" href="#_datasource_plumbing"></a>3.3.1. DataSource plumbing</h4>
 <div class="paragraph">
 <p>Normally Kermoss should integrate into your project with your existing dataSource and transactionManager configuration with no worries.</p>
 </div>
@@ -822,7 +840,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_basic_configuration_concepts"><a class="anchor" href="#_basic_configuration_concepts"></a>2.4. Basic configuration concepts</h3>
+<h3 id="_basic_configuration_concepts"><a class="anchor" href="#_basic_configuration_concepts"></a>3.4. Basic configuration concepts</h3>
 <div class="paragraph">
 <p>this part indicates the first concepts to start kermoss within your project, it illustrates the basic and fundamental elements to configure your development or test environment.</p>
 </div>
@@ -871,7 +889,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_first_steps_to_master_kermoss"><a class="anchor" href="#_first_steps_to_master_kermoss"></a>2.5. First steps to master Kermoss</h3>
+<h3 id="_first_steps_to_master_kermoss"><a class="anchor" href="#_first_steps_to_master_kermoss"></a>3.5. First steps to master Kermoss</h3>
 <div class="paragraph">
 <p>To concretely master the different concepts of kermoss we will refer to the pizzashop example, for more details on the source code of the pizzashop project see <a href="https://github.com/kermoss/kermoss/tree/master/saga-worker">here</a></p>
 </div>
@@ -893,7 +911,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_how_to_run_pizza_shop_microservices"><a class="anchor" href="#_how_to_run_pizza_shop_microservices"></a>2.6. How to run pizza shop microservices</h3>
+<h3 id="_how_to_run_pizza_shop_microservices"><a class="anchor" href="#_how_to_run_pizza_shop_microservices"></a>3.6. How to run pizza shop microservices</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -937,7 +955,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_how_to_run_pizza_shop_as_single_monolith_application"><a class="anchor" href="#_how_to_run_pizza_shop_as_single_monolith_application"></a>2.7. How to run pizza shop as single monolith application</h3>
+<h3 id="_how_to_run_pizza_shop_as_single_monolith_application"><a class="anchor" href="#_how_to_run_pizza_shop_as_single_monolith_application"></a>3.7. How to run pizza shop as single monolith application</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -960,7 +978,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_bfm_pizzashop_together"><a class="anchor" href="#_bfm_pizzashop_together"></a>2.8. BFM &amp; pizzashop together 🙏</h3>
+<h3 id="_bfm_pizzashop_together"><a class="anchor" href="#_bfm_pizzashop_together"></a>3.8. BFM &amp; pizzashop together 🙏</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -1008,7 +1026,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_kermoss_project_organization"><a class="anchor" href="#_kermoss_project_organization"></a>2.9. Kermoss : project organization</h3>
+<h3 id="_kermoss_project_organization"><a class="anchor" href="#_kermoss_project_organization"></a>3.9. Kermoss : project organization</h3>
 <div class="paragraph">
 <p>it is better to have the following organization for your project, however you are free to choose a suitable structure for your project, the objective of this part is to show you the different components that you would need to develop your project with kermoss.</p>
 </div>
@@ -1081,7 +1099,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_create_your_first_globaltransaction_worker"><a class="anchor" href="#_create_your_first_globaltransaction_worker"></a>2.10. Create your first globalTransaction worker</h3>
+<h3 id="_create_your_first_globaltransaction_worker"><a class="anchor" href="#_create_your_first_globaltransaction_worker"></a>3.10. Create your first globalTransaction worker</h3>
 <div class="paragraph">
 <p>You just have to create a java class like OrderPizzaStateWorker.java (see the example of pizzashop) which extends GlobalTransactionWorker and annotate it with spring @Component annotation</p>
 </div>
@@ -1196,7 +1214,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_begin_a_new_global_transaction"><a class="anchor" href="#_begin_a_new_global_transaction"></a>2.11. Begin a new Global transaction</h3>
+<h3 id="_begin_a_new_global_transaction"><a class="anchor" href="#_begin_a_new_global_transaction"></a>3.11. Begin a new Global transaction</h3>
 <div class="paragraph">
 <p>To be able to start a new global transaction, start an event with:</p>
 </div>
@@ -1243,7 +1261,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_bind_a_global_transaction_context"><a class="anchor" href="#_bind_a_global_transaction_context"></a>2.12. Bind a global transaction context</h3>
+<h3 id="_bind_a_global_transaction_context"><a class="anchor" href="#_bind_a_global_transaction_context"></a>3.12. Bind a global transaction context</h3>
 <div class="paragraph">
 <p>Supposing that in some situation you want to launch an event from your business logic to call a worker (ex: play, commit, or rollback a localTransaction), in this case you need a way to attach the context of a global transaction, by persisting its id in your business model at this level you can communicate with your BFM, outside the context of the global transaction</p>
 </div>
@@ -1261,7 +1279,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_call_your_bfm_workers_from_outside"><a class="anchor" href="#_call_your_bfm_workers_from_outside"></a>2.13. Call your BFM workers from outside</h3>
+<h3 id="_call_your_bfm_workers_from_outside"><a class="anchor" href="#_call_your_bfm_workers_from_outside"></a>3.13. Call your BFM workers from outside</h3>
 <div class="paragraph">
 <p>You can call your BFM at all levels from your business logic by injecting the BusinessFlow component of the kermoss framework into your services then call the <strong> access </strong> method</p>
 </div>
@@ -1299,7 +1317,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_send_a_command_to_a_remote_bfm"><a class="anchor" href="#_send_a_command_to_a_remote_bfm"></a>2.14. Send a command To a remote BFM</h3>
+<h3 id="_send_a_command_to_a_remote_bfm"><a class="anchor" href="#_send_a_command_to_a_remote_bfm"></a>3.14. Send a command To a remote BFM</h3>
 <div class="paragraph">
 <p>Sending a command to a remote BFM is quite simple with kermoss, just create a class that extends BaseTransactionCommand and choose a convinient string <strong><em>subject</em></strong> which would later be used by the remote BFM&#8217;s decoder service to create an event (kermoss will publish this event to the various subscribers in the BFM in order to receive this command). The second important argument is  <strong><em>destination</em></strong> key parameter that you will then map it with an target address (HTTP, or a Kafka topic) depending on the transport layer of your preference.</p>
 </div>
@@ -1344,7 +1362,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect3">
-<h4 id="_map_a_commands_subject_with_a_target_address"><a class="anchor" href="#_map_a_commands_subject_with_a_target_address"></a>2.14.1. Map a command&#8217;s subject with a target address</h4>
+<h4 id="_map_a_commands_subject_with_a_target_address"><a class="anchor" href="#_map_a_commands_subject_with_a_target_address"></a>3.14.1. Map a command&#8217;s subject with a target address</h4>
 <div class="paragraph">
 <p>Kermoss routes the commands to the remote BFMs based on their destination key, the destination key must be mapped with an address (HTTP or service name in consul or eurika registry services, kafka topic) in your configuration file.</p>
 </div>
@@ -1414,7 +1432,7 @@ java <span class="nt">-jar</span> saga-worker-<span class="k">${</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_receive_a_command_from_a_remote_bfm"><a class="anchor" href="#_receive_a_command_from_a_remote_bfm"></a>2.15. Receive a command from a remote BFM</h3>
+<h3 id="_receive_a_command_from_a_remote_bfm"><a class="anchor" href="#_receive_a_command_from_a_remote_bfm"></a>3.15. Receive a command from a remote BFM</h3>
 <div class="paragraph">
 <p>if you have opted for kafka to be the default transport layer for your project, in this case it will be necessary to add this following configuration part in your yaml or properties file:</p>
 </div>
@@ -1478,7 +1496,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect3">
-<h4 id="_how_to_configure_the_decoder_service"><a class="anchor" href="#_how_to_configure_the_decoder_service"></a>2.15.1. How to configure the decoder service</h4>
+<h4 id="_how_to_configure_the_decoder_service"><a class="anchor" href="#_how_to_configure_the_decoder_service"></a>3.15.1. How to configure the decoder service</h4>
 <div class="paragraph">
 <p>So that your <strong> decoder service </strong> is able to produce an event when a command arrives, it is necessary to register it and map it with the subject of the command in a dedicated component for the configuration, see the code java below .</p>
 </div>
@@ -1514,7 +1532,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect3">
-<h4 id="_commands_consumption"><a class="anchor" href="#_commands_consumption"></a>2.15.2. Commands consumption</h4>
+<h4 id="_commands_consumption"><a class="anchor" href="#_commands_consumption"></a>3.15.2. Commands consumption</h4>
 <div class="paragraph">
 <p>In the end, the command becomes visible and ready to be consumed by all the workers of your BFM who are subscribed to the BoxArrivedEvent event</p>
 </div>
@@ -1553,7 +1571,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect2">
-<h3 id="_enlist_a_local_transaction_worker"><a class="anchor" href="#_enlist_a_local_transaction_worker"></a>2.16. Enlist a Local Transaction Worker</h3>
+<h3 id="_enlist_a_local_transaction_worker"><a class="anchor" href="#_enlist_a_local_transaction_worker"></a>3.16. Enlist a Local Transaction Worker</h3>
 <div class="paragraph">
 <p>the creation and the enrollment of a local transaction is very similar to a global transaction, indeed to create a local transaction it is enough just to extend the class <strong> LocalTransactionWorker </strong> and to annotate it with @component so that it is supported by kermoss, we can take as an example the ChefCookingServiceWorker.java class in the pizzashop microservice.</p>
 </div>
@@ -1679,7 +1697,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect2">
-<h3 id="_compensating_transaction_rollback"><a class="anchor" href="#_compensating_transaction_rollback"></a>2.17. Compensating transaction (rollback)</h3>
+<h3 id="_compensating_transaction_rollback"><a class="anchor" href="#_compensating_transaction_rollback"></a>3.17. Compensating transaction (rollback)</h3>
 <div class="paragraph">
 <p>the rollback phase of a business transaction begins when:</p>
 </div>
@@ -1805,7 +1823,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect2">
-<h3 id="_synchronization"><a class="anchor" href="#_synchronization"></a>2.18. Synchronization</h3>
+<h3 id="_synchronization"><a class="anchor" href="#_synchronization"></a>3.18. Synchronization</h3>
 <div class="paragraph">
 <p>As explained previously, kermoss always promotes communication between its components in asynchronous mode and driven by messages, however in certain situations, you will have to condition the progress of your transaction by the availability of one or more business services, for example in the case of pizzashop microservice could only start its global transaction if the market service is up &amp; running.</p>
 </div>
@@ -1865,7 +1883,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect1">
-<h2 id="_kermoss_configuration"><a class="anchor" href="#_kermoss_configuration"></a>3. Kermoss configuration</h2>
+<h2 id="_kermoss_configuration"><a class="anchor" href="#_kermoss_configuration"></a>4. Kermoss configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Almost like all frameworks, kermoss offers a variety of properties to facilitate the use of its configuration, you are free to configure kermoss either with a yaml or properties file, in addition all the list of properties exposed by kermoss are discoverable by using the auto-completion of your IDE (ex: Spring Tools 4 plugin)</p>
@@ -1903,7 +1921,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </ul>
 </div>
 <div class="sect2">
-<h3 id="_kafka_as_the_default_transport_layer"><a class="anchor" href="#_kafka_as_the_default_transport_layer"></a>3.1. Kafka as the default transport Layer</h3>
+<h3 id="_kafka_as_the_default_transport_layer"><a class="anchor" href="#_kafka_as_the_default_transport_layer"></a>4.1. Kafka as the default transport Layer</h3>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -1987,9 +2005,9 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect2">
-<h3 id="_http_as_the_default_transport_layer"><a class="anchor" href="#_http_as_the_default_transport_layer"></a>3.2. HTTP as the default transport Layer</h3>
+<h3 id="_http_as_the_default_transport_layer"><a class="anchor" href="#_http_as_the_default_transport_layer"></a>4.2. HTTP as the default transport Layer</h3>
 <div class="sect3">
-<h4 id="_feign_support"><a class="anchor" href="#_feign_support"></a>3.2.1. Feign support</h4>
+<h4 id="_feign_support"><a class="anchor" href="#_feign_support"></a>4.2.1. Feign support</h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -2031,7 +2049,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect3">
-<h4 id="_http_resttemplate_support"><a class="anchor" href="#_http_resttemplate_support"></a>3.2.2. Http restTemplate support</h4>
+<h4 id="_http_resttemplate_support"><a class="anchor" href="#_http_resttemplate_support"></a>4.2.2. Http restTemplate support</h4>
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
@@ -2074,12 +2092,12 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect2">
-<h3 id="_advanced_configuration"><a class="anchor" href="#_advanced_configuration"></a>3.3. Advanced configuration</h3>
+<h3 id="_advanced_configuration"><a class="anchor" href="#_advanced_configuration"></a>4.3. Advanced configuration</h3>
 <div class="paragraph">
 <p>If you are not satisfied, or you find some limitation regarding the default implementation of the kemoss framework configuration according to your needs, you are free to reimplement some configuration that comes with kermoss including those of kafka (producer and consumer ) and the command routing strategy.</p>
 </div>
 <div class="sect3">
-<h4 id="_define_your_kafkaproducer"><a class="anchor" href="#_define_your_kafkaproducer"></a>3.3.1. Define your KafkaProducer</h4>
+<h4 id="_define_your_kafkaproducer"><a class="anchor" href="#_define_your_kafkaproducer"></a>4.3.1. Define your KafkaProducer</h4>
 <div class="paragraph">
 <p>To reimplement the configuration of your kafkaTemplate you should at least write your configuration as follows:</p>
 </div>
@@ -2141,7 +2159,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect3">
-<h4 id="_define_your_kafkalistener_container_factory"><a class="anchor" href="#_define_your_kafkalistener_container_factory"></a>3.3.2. Define your KafkaListener container factory</h4>
+<h4 id="_define_your_kafkalistener_container_factory"><a class="anchor" href="#_define_your_kafkalistener_container_factory"></a>4.3.2. Define your KafkaListener container factory</h4>
 <div class="paragraph">
 <p>To reimplement the configuration of your <strong> ConcurrentKafkaListenerContainerFactory </strong> you should at least write your configuration as follows:</p>
 </div>
@@ -2204,7 +2222,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 </div>
 <div class="sect3">
-<h4 id="_suitable_strategy_for_transporting_your_commands"><a class="anchor" href="#_suitable_strategy_for_transporting_your_commands"></a>3.3.3. Suitable strategy for transporting your commands</h4>
+<h4 id="_suitable_strategy_for_transporting_your_commands"><a class="anchor" href="#_suitable_strategy_for_transporting_your_commands"></a>4.3.3. Suitable strategy for transporting your commands</h4>
 <div class="paragraph">
 <p>To reimplement the transport strategies of your commands, you should reimplement the configuration method <strong> "CommandTransporterStrategy strategy" </strong> with @Bean annotation, then redefine your strategy by implementing the following interface CommandTransporterStrategy</p>
 </div>
@@ -2246,7 +2264,7 @@ to carry out this operation you should create a decoder service allowing to prod
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-27 22:15:15 +0100
+Last updated 2021-03-28 23:24:07 +0100
 </div>
 </div>
 <style>
